@@ -1,4 +1,4 @@
-import Hero from "@/components/home/Hero";
+import HeroFullBleed from "@/components/home/heroes/HeroFullBleed";
 import ValueProps from "@/components/home/ValueProps";
 import CategoryGrid from "@/components/home/CategoryGrid";
 import MeetTheMaker from "@/components/home/MeetTheMaker";
@@ -14,7 +14,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero />
+      <HeroFullBleed />
       <ValueProps />
       <CategoryGrid />
       <MeetTheMaker teaser={settings.aboutTeaser} />
