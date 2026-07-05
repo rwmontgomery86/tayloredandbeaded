@@ -95,9 +95,9 @@ export default async function ProductPage({
               <div className="mt-6">
                 <p className="eyebrow mb-2.5 text-[0.65rem]">Colors</p>
                 <div className="flex gap-2">
-                  {product.colors.map((c) => (
+                  {product.colors.map((c, i) => (
                     <span
-                      key={c.hex}
+                      key={`${c.hex}-${i}`}
                       title={c.label}
                       className="h-5 w-5 rounded-full ring-1 ring-ink/15"
                       style={{ backgroundColor: c.hex }}

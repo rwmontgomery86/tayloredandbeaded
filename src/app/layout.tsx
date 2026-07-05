@@ -38,6 +38,10 @@ export default async function RootLayout({
       className={`${bodoni.variable} ${jost.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
+        {/* Without JS, Framer Motion's SSR'd initial styles would hide content */}
+        <noscript>
+          <style>{`[style*="opacity"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <AnnouncementBar messages={settings.announcementMessages} />
         <Header instagramUrl={settings.instagramUrl} />
         <main className="flex-1">{children}</main>

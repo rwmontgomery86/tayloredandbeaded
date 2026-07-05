@@ -45,9 +45,9 @@ export default function ProductCard({
         <p className="mt-1 text-sm text-ink-soft">{formatPrice(product.price)}</p>
         {product.colors.length > 0 && (
           <div className="mt-2.5 flex justify-center gap-1.5" aria-hidden>
-            {product.colors.slice(0, 5).map((c) => (
+            {product.colors.slice(0, 5).map((c, i) => (
               <span
-                key={c.hex}
+                key={`${c.hex}-${i}`}
                 className="h-2.5 w-2.5 rounded-full ring-1 ring-ink/10"
                 style={{ backgroundColor: c.hex }}
               />

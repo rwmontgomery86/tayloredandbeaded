@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 
-export const gentleEase = [0.22, 1, 0.36, 1] as const;
+import { gentleEase } from "./ease";
 
 /**
  * Fade-and-rise on scroll into view. `delay` staggers siblings that

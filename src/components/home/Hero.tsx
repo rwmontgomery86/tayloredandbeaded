@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import FloralDecor from "@/components/ui/FloralDecor";
 import FloatDecor from "@/components/motion/FloatDecor";
-import { gentleEase } from "@/components/motion/Reveal";
+import { gentleEase } from "@/components/motion/ease";
 import { HeartIcon, SparkleIcon } from "@/components/ui/icons";
 
 const rise = (delay: number) => ({

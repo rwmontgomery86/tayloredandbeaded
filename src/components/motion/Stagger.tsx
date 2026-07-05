@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { gentleEase } from "./Reveal";
+import { gentleEase } from "./ease";
 
 const parent = {
   hidden: {},
