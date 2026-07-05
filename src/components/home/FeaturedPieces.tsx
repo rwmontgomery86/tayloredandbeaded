@@ -2,9 +2,9 @@ import Section, { Container } from "@/components/ui/Section";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/motion/Reveal";
 import ProductCarousel from "@/components/product/ProductCarousel";
-import type { DemoProduct } from "@/lib/demo-products";
+import type { ProductCardData } from "@/lib/types";
 
-export default function FeaturedPieces({ products }: { products: DemoProduct[] }) {
+export default function FeaturedPieces({ products }: { products: ProductCardData[] }) {
   if (products.length === 0) return null;
   return (
     <Section>

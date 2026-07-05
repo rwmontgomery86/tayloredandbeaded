@@ -3,10 +3,10 @@
 import { useRef } from "react";
 import ProductCard from "./ProductCard";
 import { ChevronIcon } from "@/components/ui/icons";
-import type { DemoProduct } from "@/lib/demo-products";
+import type { ProductCardData } from "@/lib/types";
 
 /** Native scroll-snap carousel; buttons nudge by one card width. */
-export default function ProductCarousel({ products }: { products: DemoProduct[] }) {
+export default function ProductCarousel({ products }: { products: ProductCardData[] }) {
   const track = useRef<HTMLUListElement>(null);
 
   function nudge(dir: 1 | -1) {

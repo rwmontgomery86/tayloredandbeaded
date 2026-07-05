@@ -4,17 +4,20 @@ import CategoryGrid from "@/components/home/CategoryGrid";
 import MeetTheMaker from "@/components/home/MeetTheMaker";
 import FeaturedPieces from "@/components/home/FeaturedPieces";
 import NewsletterBand from "@/components/home/NewsletterBand";
-import { DEMO_PRODUCTS } from "@/lib/demo-products";
+import { getFeaturedProducts, getSettings } from "@/lib/data";
 
-export default function HomePage() {
-  const featured = DEMO_PRODUCTS.filter((p) => p.featured);
+export default async function HomePage() {
+  const [featured, settings] = await Promise.all([
+    getFeaturedProducts(),
+    getSettings(),
+  ]);
 
   return (
     <>
       <Hero />
       <ValueProps />
       <CategoryGrid />
-      <MeetTheMaker />
+      <MeetTheMaker teaser={settings.aboutTeaser} />
       <FeaturedPieces products={featured} />
       <NewsletterBand />
     </>

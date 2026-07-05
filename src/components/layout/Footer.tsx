@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/categories";
-import { INSTAGRAM_URL } from "@/lib/site";
 import { HeartIcon, InstagramIcon } from "@/components/ui/icons";
 import NewsletterForm from "@/components/forms/NewsletterForm";
 
@@ -17,7 +16,7 @@ const COMPANY_LINKS = [
   { href: "/shop?category=new-arrivals", label: "New Arrivals" },
 ];
 
-export default function Footer() {
+export default function Footer({ instagramUrl }: { instagramUrl: string }) {
   return (
     <footer className="border-t border-ink/10 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
@@ -72,7 +71,7 @@ export default function Footer() {
             </p>
             <NewsletterForm compact />
             <a
-              href={INSTAGRAM_URL}
+              href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-2 text-sm text-ink transition-colors hover:text-mauve-deep"

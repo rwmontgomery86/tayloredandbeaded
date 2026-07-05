@@ -6,7 +6,6 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { InstagramIcon, MenuIcon, CloseIcon } from "@/components/ui/icons";
-import { INSTAGRAM_URL } from "@/lib/site";
 
 const NAV = [
   { href: "/shop", label: "Shop" },
@@ -15,7 +14,7 @@ const NAV = [
   { href: "/contact", label: "Contact" },
 ];
 
-export default function Header() {
+export default function Header({ instagramUrl }: { instagramUrl: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -80,7 +79,7 @@ export default function Header() {
         {/* right: instagram */}
         <div className="flex items-center justify-end gap-4">
           <a
-            href={INSTAGRAM_URL}
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Taylored & Beaded on Instagram"

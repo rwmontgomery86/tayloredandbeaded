@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import FloralDecor from "@/components/ui/FloralDecor";
 import { HeartIcon } from "@/components/ui/icons";
 
-export default function MeetTheMaker() {
+export default function MeetTheMaker({ teaser }: { teaser: string }) {
   return (
     <Section bg="cream-dark" className="overflow-hidden">
       <FloralDecor className="right-[-3rem] top-1/2 hidden w-56 -translate-y-1/2 text-mauve/25 lg:block" flip />
@@ -43,10 +43,7 @@ export default function MeetTheMaker() {
               Hi, I&rsquo;m <em className="font-normal italic">Taylor</em>
             </h2>
             <p className="mt-5 max-w-lg leading-relaxed text-ink-soft">
-              Taylored &amp; Beaded was created from my love of color,
-              creativity, and meaningful connection. Every piece is hand-strung
-              with care in small batches&mdash;because you deserve jewelry as
-              special as you are.
+              {teaser}
             </p>
             <div className="mt-8">
               <Button href="/about" variant="outline">
