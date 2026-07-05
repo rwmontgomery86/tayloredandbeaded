@@ -18,12 +18,20 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "Taylored & Beaded — Handmade Beaded Jewelry",
     template: "%s — Taylored & Beaded",
   },
   description:
     "One-of-a-kind handmade beaded necklaces, bracelets, anklets, and bag charms. Colorful, meaningful pieces made to celebrate life's little moments.",
+  openGraph: {
+    siteName: "Taylored & Beaded",
+    type: "website",
+    images: ["/brand/og-card.png"],
+  },
 };
 
 export default async function RootLayout({
