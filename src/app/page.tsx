@@ -1,7 +1,7 @@
 import HeroFullBleed from "@/components/home/heroes/HeroFullBleed";
 import ValueProps from "@/components/home/ValueProps";
 import CategoryGrid from "@/components/home/CategoryGrid";
-import MeetTheMaker from "@/components/home/MeetTheMaker";
+import MakerStoryBand from "@/components/home/makers/MakerStoryBand";
 import FeaturedPieces from "@/components/home/FeaturedPieces";
 import NewsletterBand from "@/components/home/NewsletterBand";
 import { getFeaturedProducts, getSettings } from "@/lib/data";
@@ -17,7 +17,7 @@ export default async function HomePage() {
       <HeroFullBleed />
       <ValueProps />
       <CategoryGrid />
-      <MeetTheMaker teaser={settings.aboutTeaser} />
+      <MakerStoryBand teaser={settings.aboutTeaser} />
       <FeaturedPieces products={featured} />
       <NewsletterBand />
     </>

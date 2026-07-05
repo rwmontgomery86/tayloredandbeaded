@@ -7,12 +7,15 @@ import Button from "@/components/ui/Button";
 import FloralDecor from "@/components/ui/FloralDecor";
 import { HeartIcon } from "@/components/ui/icons";
 
+const DEFAULT_TEASER =
+  "What started as a way to relieve stress after unexpectedly losing my job became my creative outlet, my therapy, and my passion. Every piece is handmade with love, creativity, and a little piece of my story.";
+
 /**
- * Maker variant A — "Story Band" (safe evolution).
- * Today's cream-dark band, but the blob becomes a clean rounded
- * rectangle and the copy leads with the story, closing on a signature.
+ * Maker variant A — "Story Band": the chosen homepage Meet-the-Maker
+ * section. The paragraph stays editable via Sanity's aboutTeaser;
+ * the pull-quote and signature are fixed brand prose.
  */
-export default function MakerStoryBand() {
+export default function MakerStoryBand({ teaser }: { teaser?: string }) {
   return (
     <Section bg="cream-dark" className="overflow-hidden">
       <FloralDecor className="right-[-3rem] top-1/2 hidden w-56 -translate-y-1/2 text-mauve/25 lg:block" flip />
@@ -54,10 +57,7 @@ export default function MakerStoryBand() {
               circumstances.&rdquo;
             </p>
             <p className="mt-4 max-w-lg leading-relaxed text-ink-soft">
-              What started as a way to relieve stress after unexpectedly losing
-              my job became my creative outlet, my therapy, and my passion.
-              Every piece is handmade with love, creativity, and a little piece
-              of my story.
+              {teaser ?? DEFAULT_TEASER}
             </p>
             <p className="mt-5 font-serif text-2xl italic">Love, Taylor</p>
             <div className="mt-7">

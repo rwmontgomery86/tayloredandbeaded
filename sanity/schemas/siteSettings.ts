@@ -41,7 +41,7 @@ export default defineType({
       type: "text",
       rows: 3,
       initialValue:
-        "Taylored & Beaded was created from my love of color, creativity, and meaningful connection. Every piece is hand-strung with care in small batches—because you deserve jewelry as special as you are.",
+        "What started as a way to relieve stress after unexpectedly losing my job became my creative outlet, my therapy, and my passion. Every piece is handmade with love, creativity, and a little piece of my story.",
     }),
   ],
   preview: { prepare: () => ({ title: "Site Settings" }) },
