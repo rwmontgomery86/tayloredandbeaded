@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #f7f4ef;
-  --color-cream-dark: #efe9e0;
-  --color-ink: #3d3733;
-  --color-ink-soft: #7a716a;
-  --color-mauve: #c49a9a;
-  --color-mauve-deep: #a87e80;
-  --color-blush: #e8d9d5;
-  --color-sage: #b8bdad;
+  --color-cream: #f7f8f8;
+  --color-cream-dark: #eceef0;
+  --color-ink: #33363a;
+  --color-ink-soft: #6e7378;
+  --color-mauve: #c39aa5;
+  --color-mauve-deep: #a67a87;
+  --color-blush: #e8dee3;
+  --color-sage: #aeb9b5;
 
   --font-serif: var(--font-bodoni), "Bodoni 72", Didot, Georgia, serif;
   --font-sans: var(--font-jost), system-ui, sans-serif;

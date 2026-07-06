@@ -4,18 +4,18 @@ Derived from the client-approved homepage mockup (`assets/mockup.png`) and brand
 
 ## Color
 
-Strategy: **Committed cream.** The warm cream ground carries the entire surface; mauve is the single accent for actions, blush/sage for decorative tints only. Colorfulness comes from the jewelry photography, never from the UI.
+Strategy: **Committed porcelain** (adopted July 2026, replacing the original warm cream after a palette lab — client wanted less brown). Cool off-white ground carries the entire surface; a dusty rose is the single accent for actions, blush/sage for decorative tints only. Colorfulness comes from the jewelry photography, never from the UI.
 
-- `--color-cream: #f7f4ef` — page ground (warm, slightly yellow)
-- `--color-cream-dark: #efe9e0` — alternate section bands, image placeholders
-- `--color-ink: #3d3733` — text; warm near-black, never #000
-- `--color-ink-soft: #7a716a` — secondary text, eyebrows
-- `--color-mauve: #c49a9a` — buttons, key accents
-- `--color-mauve-deep: #a87e80` — hover/emphasis
-- `--color-blush: #e8d9d5` — tints, badges, decorative fills
-- `--color-sage: #b8bdad` — secondary decorative (florals)
+- `--color-cream: #f7f8f8` — page ground (cool porcelain off-white)
+- `--color-cream-dark: #eceef0` — alternate section bands, image placeholders
+- `--color-ink: #33363a` — text; cool near-black, never #000
+- `--color-ink-soft: #6e7378` — secondary text, eyebrows
+- `--color-mauve: #c39aa5` — buttons, key accents (dusty cool rose)
+- `--color-mauve-deep: #a67a87` — hover/emphasis
+- `--color-blush: #e8dee3` — tints, badges, decorative fills
+- `--color-sage: #aeb9b5` — secondary decorative (florals, eucalyptus-leaning)
 
-Light theme only. Scene: a shopper browsing on her phone in daylight or lamplight; jewelry colors must read true against a warm paper-like ground.
+Light theme only. Scene: a shopper browsing on her phone in daylight; jewelry colors must read true against a clean gallery-like ground. Token names (cream/mauve/…) kept for stability even though values cooled.
 
 ## Typography
 

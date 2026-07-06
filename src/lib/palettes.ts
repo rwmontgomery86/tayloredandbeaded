@@ -10,7 +10,8 @@ export interface Palette {
   vars: Record<string, string>;
 }
 
-export const CURRENT_PALETTE_VARS: Record<string, string> = {
+/** The retired warm-cream palette, kept for comparison in the lab. */
+export const LEGACY_CREAM_VARS: Record<string, string> = {
   "--color-cream": "#f7f4ef",
   "--color-cream-dark": "#efe9e0",
   "--color-ink": "#3d3733",
