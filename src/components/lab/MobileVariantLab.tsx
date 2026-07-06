@@ -1,61 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ChevronIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import { ScaledPreview, type LabVariant } from "./VariantLab";
 
-export interface LabVariant {
-  id: string;
-  name: string;
-  blurb: string;
-  Comp: React.ComponentType;
-}
+/** iPhone-ish canvas the mobile variants are designed against. */
+const PHONE_WIDTH = 390;
+const PHONE_HEIGHT = 760;
 
-const PREVIEW_WIDTH = 1280;
-
-/** Renders a full section scaled down to fit its container width. */
-export function ScaledPreview({
-  height,
-  designWidth = PREVIEW_WIDTH,
-  children,
-}: {
-  height: number;
-  designWidth?: number;
-  children: React.ReactNode;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.25);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const measure = () => {
-      if (el.clientWidth > 0) setScale(el.clientWidth / designWidth);
-    };
-    // Measure synchronously — ResizeObserver callbacks are frame-deferred
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [designWidth]);
-
+/** Simple dark-bezel phone frame around a fixed 390×760 canvas. */
+function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      ref={ref}
-      className="relative w-full overflow-hidden bg-cream"
-      style={{ height: height * scale }}
-    >
+    <div className="inline-block rounded-[3rem] border-[10px] border-ink bg-ink shadow-[0_30px_70px_-30px_rgba(51,54,58,0.5)]">
       <div
-        className="pointer-events-none absolute top-0 left-0 select-none"
-        style={{
-          width: designWidth,
-          height,
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-        }}
-        aria-hidden
-        // Previews are illustrative duplicates; keep them out of the a11y tree
-        inert
+        className="relative overflow-hidden rounded-[2.4rem] bg-cream"
+        style={{ width: PHONE_WIDTH, height: PHONE_HEIGHT }}
       >
         {children}
       </div>
@@ -64,19 +24,27 @@ export function ScaledPreview({
 }
 
 /**
- * Design-lab shell: full-size click-through viewer (pills + arrows) with
- * a scaled side-by-side comparison grid beneath. Used by /lab/* routes.
+ * Mobile-focused design-lab shell: variants are designed against a fixed
+ * phone-width canvas (Tailwind breakpoints track the browser viewport, so
+ * responsive components can't be previewed at phone width inside a desktop
+ * page — variants here are dedicated mobile compositions instead). Offers a
+ * full-size phone viewer with a desktop-reference toggle, plus a scaled
+ * side-by-side comparison grid. Used by /lab/* routes.
  */
-export default function VariantLab({
+export default function MobileVariantLab({
   title,
   variants,
-  previewHeight = 720,
+  DesktopReference,
+  desktopNote,
 }: {
   title: string;
   variants: readonly LabVariant[];
-  previewHeight?: number;
+  /** The (unchanged) desktop rendering, shown for context. */
+  DesktopReference?: React.ComponentType;
+  desktopNote?: string;
 }) {
   const [active, setActive] = useState(0);
+  const [view, setView] = useState<"phone" | "desktop">("phone");
   const variant = variants[active];
   const ActiveComp = variant.Comp;
 
@@ -128,18 +96,55 @@ export default function VariantLab({
       </div>
 
       {/* full-size viewer — key remounts so the entrance motion replays */}
-      <div className="border-b border-ink/10">
-        <div key={variant.id}>
-          <ActiveComp />
-        </div>
-        <p className="mx-auto max-w-6xl px-5 py-6 text-sm text-ink-soft md:px-8">
+      <div className="border-b border-ink/10 bg-cream-dark/30">
+        {DesktopReference && (
+          <div className="flex justify-center gap-2 pt-8">
+            {(["phone", "desktop"] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setView(mode)}
+                aria-current={view === mode}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-[0.65rem] tracking-[0.14em] uppercase transition-colors",
+                  view === mode
+                    ? "border-ink bg-ink text-cream"
+                    : "border-ink/20 hover:border-ink/60",
+                )}
+              >
+                {mode === "phone" ? "Mobile" : "Desktop reference"}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {view === "phone" || !DesktopReference ? (
+          <div className="flex justify-center px-5 py-10">
+            <PhoneFrame key={variant.id}>
+              <ActiveComp />
+            </PhoneFrame>
+          </div>
+        ) : (
+          <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
+            <div className="overflow-hidden rounded-2xl border border-ink/10">
+              <ScaledPreview height={720}>
+                <DesktopReference />
+              </ScaledPreview>
+            </div>
+            <p className="mt-4 text-center text-sm text-ink-soft">
+              {desktopNote ??
+                "Desktop stays as-is — every variant only changes the layout below the tablet breakpoint."}
+            </p>
+          </div>
+        )}
+
+        <p className="mx-auto max-w-6xl px-5 pb-6 text-center text-sm text-ink-soft md:px-8">
           <strong className="font-medium text-ink">{variant.name}.</strong>{" "}
           {variant.blurb}
         </p>
       </div>
 
       {/* side-by-side comparison */}
-      <div className="mx-auto max-w-7xl px-5 pt-14 md:px-8">
+      <div className="mx-auto max-w-6xl px-5 pt-14 md:px-8">
         <p className="eyebrow mb-6 text-center">Side by side</p>
         <div className="grid gap-6 md:grid-cols-3">
           {variants.map((v, i) => (
@@ -147,6 +152,7 @@ export default function VariantLab({
               key={v.id}
               onClick={() => {
                 setActive(i);
+                setView("phone");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className={cn(
@@ -156,7 +162,7 @@ export default function VariantLab({
                   : "border-ink/10 hover:border-ink/40",
               )}
             >
-              <ScaledPreview height={previewHeight}>
+              <ScaledPreview height={PHONE_HEIGHT} designWidth={PHONE_WIDTH}>
                 <v.Comp />
               </ScaledPreview>
               <div className="border-t border-ink/10 px-4 py-3">
