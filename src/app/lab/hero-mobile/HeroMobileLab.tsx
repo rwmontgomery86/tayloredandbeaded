@@ -18,7 +18,7 @@ const VARIANTS = [
     id: "panel",
     name: "B · Frosted Panel",
     blurb:
-      "The photo stays immersive and edge-to-edge; every word lives on a frosted-glass card anchored to the bottom. Keeps the campaign energy, adds a guaranteed-readable surface.",
+      "The photo stays immersive and edge-to-edge; every word lives on a frosted-glass card anchored to the bottom. Keeps the campaign energy, adds a guaranteed-readable surface. (Now live on the homepage.)",
     Comp: HeroMobilePanel,
   },
   {
