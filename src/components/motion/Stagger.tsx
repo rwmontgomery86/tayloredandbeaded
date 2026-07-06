@@ -17,22 +17,39 @@ const child = {
   },
 };
 
-/** Container that staggers its StaggerItem children into view. */
+/**
+ * Container that staggers its StaggerItem children in.
+ *
+ * `trigger` controls what starts the reveal:
+ *  - "view" (default): reveal on scroll into view — best for below-the-fold sections.
+ *  - "mount": reveal as soon as it mounts — required for grids reached via
+ *    client-side navigation (e.g. shop category filters). A scroll-based trigger
+ *    doesn't reliably re-fire when the grid remounts already in the viewport, which
+ *    would leave the cards stuck at opacity 0 until a full page reload.
+ */
 export function Stagger({
   children,
   className,
+  trigger = "view",
 }: {
   children: React.ReactNode;
   className?: string;
+  trigger?: "view" | "mount";
 }) {
   const reduce = useReducedMotion();
+  const reveal =
+    trigger === "mount"
+      ? { animate: "show" as const }
+      : {
+          whileInView: "show" as const,
+          viewport: { once: true, margin: "-60px" as const },
+        };
   return (
     <motion.div
       className={className}
       variants={parent}
       initial={reduce ? false : "hidden"}
-      whileInView="show"
-      viewport={{ once: true, margin: "-60px" }}
+      {...reveal}
     >
       {children}
     </motion.div>

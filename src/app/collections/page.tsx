@@ -27,7 +27,7 @@ export default async function CollectionsPage() {
         </div>
 
         {collections.length > 0 ? (
-          <Stagger className="grid gap-8 md:grid-cols-2">
+          <Stagger trigger="mount" className="grid gap-8 md:grid-cols-2">
             {collections.map((c) => (
               <StaggerItem key={c.id}>
                 <Link href={`/collections/${c.slug}`} className="group block">
