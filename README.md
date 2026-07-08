@@ -25,14 +25,15 @@ zero env vars.
 1. Create a free project at [sanity.io/manage](https://www.sanity.io/manage)
    (dataset: `production`).
 2. Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SANITY_PROJECT_ID`.
-3. Restart the dev server, open `http://localhost:3000/studio`, sign in, and
-   add content:
-   - **Pricing** — seeded values: necklaces $25, others $15 (per-product
-     override available on each product)
-   - **Products** — photos, category, colors, featured/new flags
-   - **Site Settings** and **Care Guide** singletons
-4. In sanity.io/manage → API → CORS origins, add `http://localhost:3000` and
-   the production domain (with credentials) so the embedded Studio can sign in.
+3. Run `npm run sanity:seed` to populate the dataset with the built-in seed
+   content (products with photos, collections, FAQ, pricing, care guide, and
+   site settings). Idempotent — safe to re-run.
+4. Restart the dev server, open `http://localhost:3000/studio`, sign in, and
+   edit content from there.
+5. In sanity.io/manage → API → CORS origins, add `http://localhost:3000` and
+   the production domain (with credentials) so the embedded Studio can sign
+   in. (Localhost can also be added via
+   `npx sanity cors add http://localhost:3000 --credentials`.)
 
 Once Sanity has products, the seed content disappears automatically.
 
