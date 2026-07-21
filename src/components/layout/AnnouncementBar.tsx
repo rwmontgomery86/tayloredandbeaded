@@ -7,7 +7,6 @@ import { HeartIcon, SparkleIcon } from "@/components/ui/icons";
 const DEFAULT_MESSAGES = [
   "Handmade with love",
   "Free shipping on orders $75+",
-  "Woman owned",
 ];
 
 /**

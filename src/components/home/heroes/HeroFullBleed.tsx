@@ -4,7 +4,6 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { gentleEase } from "@/components/motion/ease";
-import { HeartIcon } from "@/components/ui/icons";
 
 /**
  * Variant C — "Full-Bleed" (bold).
@@ -63,13 +62,8 @@ export default function HeroFullBleed() {
             className="mx-auto mt-3 max-w-[17rem] text-sm leading-relaxed text-ink-soft md:mx-0 md:mt-6 md:max-w-md md:text-[0.95rem]"
             {...rise(0.28)}
           >
-            One-of-a-kind beaded pieces, hand-strung with love in small
-            batches
-            <span className="hidden md:inline">
-              {" "}
-              for life&rsquo;s little moments
-            </span>
-            .
+            One-of-a-kind beaded pieces, where the beauty is in the
+            details.
           </motion.p>
           <motion.div
             className="mt-6 flex flex-col items-center gap-4 md:mt-9 md:flex-row md:flex-wrap md:gap-5"
@@ -81,10 +75,6 @@ export default function HeroFullBleed() {
             >
               Shop New Arrivals
             </Button>
-            <p className="flex items-center gap-2 text-xs tracking-[0.14em] uppercase text-ink-soft">
-              <HeartIcon size={13} filled className="text-mauve" />
-              Woman owned
-            </p>
           </motion.div>
         </div>
       </div>

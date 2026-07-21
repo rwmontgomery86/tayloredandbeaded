@@ -15,7 +15,6 @@ export default defineType({
       initialValue: [
         "Handmade with love",
         "Free shipping on orders $75+",
-        "Woman owned",
       ],
     }),
     defineField({

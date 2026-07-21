@@ -4,7 +4,6 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { gentleEase } from "@/components/motion/ease";
-import { HeartIcon } from "@/components/ui/icons";
 
 /**
  * Mobile variant A — "Porcelain Stack".
@@ -41,10 +40,6 @@ export default function HeroMobileStack() {
           {...rise(0.3)}
         >
           <Button href="/shop?category=new-arrivals">Shop New Arrivals</Button>
-          <p className="flex items-center gap-2 text-xs tracking-[0.14em] uppercase text-ink-soft">
-            <HeartIcon size={13} filled className="text-mauve" />
-            Woman owned
-          </p>
         </motion.div>
       </div>
 

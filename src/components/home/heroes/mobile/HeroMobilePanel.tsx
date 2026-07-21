@@ -4,7 +4,6 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { gentleEase } from "@/components/motion/ease";
-import { HeartIcon } from "@/components/ui/icons";
 
 /**
  * Mobile variant B — "Frosted Panel".
@@ -42,15 +41,11 @@ export default function HeroMobilePanel() {
           <em className="font-normal italic">your story.</em>
         </h1>
         <p className="mx-auto mt-3 max-w-[17rem] text-sm leading-relaxed text-ink-soft">
-          One-of-a-kind beaded pieces, hand-strung with love in small batches.
+          One-of-a-kind beaded pieces, where the beauty is in the details.
         </p>
         <Button href="/shop?category=new-arrivals" className="mt-6 w-full">
           Shop New Arrivals
         </Button>
-        <p className="mt-4 flex items-center justify-center gap-2 text-xs tracking-[0.14em] uppercase text-ink-soft">
-          <HeartIcon size={13} filled className="text-mauve" />
-          Woman owned
-        </p>
       </motion.div>
     </section>
   );
