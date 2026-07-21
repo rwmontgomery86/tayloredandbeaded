@@ -235,7 +235,6 @@ export const SEED_SETTINGS: SiteSettingsData = {
   announcementMessages: [
     "Handmade with love",
     "Free shipping on orders $75+",
-    "Woman owned",
   ],
   instagramUrl: "https://www.instagram.com/taylored_beaded/",
   aboutTeaser:

@@ -4,7 +4,6 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { gentleEase } from "@/components/motion/ease";
-import { HeartIcon } from "@/components/ui/icons";
 
 /**
  * Mobile variant C — "Recrop".
@@ -55,18 +54,13 @@ export default function HeroMobileRecrop() {
           className="mx-auto mt-4 max-w-[18rem] text-sm leading-relaxed text-ink-soft"
           {...rise(0.28)}
         >
-          One-of-a-kind beaded pieces, hand-strung with love in small batches
-          for life&rsquo;s little moments.
+          One-of-a-kind beaded pieces, where the beauty is in the details.
         </motion.p>
         <motion.div
           className="mt-7 flex flex-col items-center gap-4"
           {...rise(0.4)}
         >
           <Button href="/shop?category=new-arrivals">Shop New Arrivals</Button>
-          <p className="flex items-center gap-2 text-xs tracking-[0.14em] uppercase text-ink-soft">
-            <HeartIcon size={13} filled className="text-mauve" />
-            Woman owned
-          </p>
         </motion.div>
       </div>
     </section>
