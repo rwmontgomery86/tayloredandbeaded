@@ -1,14 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #f7f8f8;
-  --color-cream-dark: #eceef0;
-  --color-ink: #33363a;
-  --color-ink-soft: #6e7378;
-  --color-mauve: #c39aa5;
-  --color-mauve-deep: #a67a87;
-  --color-blush: #e8dee3;
-  --color-sage: #aeb9b5;
+  /* "Gallery" palette — pure white grounds, true-black accent.
+     Token names (cream/mauve/…) are kept for class-name stability. */
+  --color-cream: #ffffff;
+  --color-cream-dark: #f5f5f5;
+  --color-ink: #121212;
+  --color-ink-soft: #6b6b6b;
+  --color-mauve: #111111;
+  --color-mauve-deep: #000000;
+  --color-blush: #ececec;
+  --color-sage: #9a9a9a;
 
   --font-serif: var(--font-bodoni), "Bodoni 72", Didot, Georgia, serif;
   --font-sans: var(--font-jost), system-ui, sans-serif;
