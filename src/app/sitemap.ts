@@ -9,7 +9,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getCollectionSlugs(),
   ]);
 
-  const staticPages = ["", "/shop", "/collections", "/about", "/contact", "/faq"].map(
+  const staticPages = [
+    "",
+    "/shop",
+    "/collections",
+    "/permanent-jewelry",
+    "/about",
+    "/contact",
+    "/faq",
+  ].map(
     (p) => ({ url: `${SITE_URL}${p}`, lastModified: new Date() }),
   );
   const categoryPages = [...CATEGORIES.map((c) => c.slug), NEW_ARRIVALS_SLUG].map(

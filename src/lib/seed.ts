@@ -205,6 +205,41 @@ export const SEED_FAQ: FaqItemData[] = [
       "Yes! Every order arrives beautifully packaged and gift ready, at no extra cost.",
     category: "general",
   },
+  {
+    id: "seed-pj-hurt",
+    question: "Does the weld hurt?",
+    answer:
+      "Not at all. The spark is tiny, quick, and never touches your skin — a small guard sits between you and the weld. Most people are mid-sentence when it's already done.",
+    category: "permanent-jewelry",
+  },
+  {
+    id: "seed-pj-removal",
+    question: "Can I take it off?",
+    answer:
+      "It's made to stay, but it isn't forever unless you want it to be: ordinary scissors snip it off in seconds. Keep the chain and Taylor will weld it right back on next time you see her.",
+    category: "permanent-jewelry",
+  },
+  {
+    id: "seed-pj-water",
+    question: "Can I shower and swim in it?",
+    answer:
+      "Yes — it's made for everyday life, showers included. Like any delicate jewelry, lots of pool and salt water can dull the finish over time, so give it a rinse after swimming.",
+    category: "permanent-jewelry",
+  },
+  {
+    id: "seed-pj-where",
+    question: "Where do fittings happen?",
+    answer:
+      "In person, always — at markets, pop-ups, and private events around town. Send a note and Taylor will tell you where she'll be next.",
+    category: "permanent-jewelry",
+  },
+  {
+    id: "seed-pj-events",
+    question: "Do you do private events?",
+    answer:
+      "Happily — birthdays, bridal showers, girls' nights, boutique pop-ups. Taylor brings the whole station; you just gather your people. Send your date and she'll take it from there.",
+    category: "permanent-jewelry",
+  },
 ];
 
 export const SEED_CARE_GUIDE: CareGuideData = {

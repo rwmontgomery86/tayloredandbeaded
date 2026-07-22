@@ -7,12 +7,21 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { InstagramIcon, MenuIcon, CloseIcon } from "@/components/ui/icons";
 
-const NAV = [
+// Five links no longer fit on one side of the centered logo, so the
+// desktop nav splits around it; the mobile panel renders them all.
+const NAV_LEFT = [
   { href: "/shop", label: "Shop" },
   { href: "/collections", label: "Collections" },
+  { href: "/permanent-jewelry", label: "Permanent Jewelry" },
+];
+const NAV_RIGHT = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
+const NAV = [...NAV_LEFT, ...NAV_RIGHT];
+
+const navLinkClass =
+  "link-underline text-[0.72rem] tracking-[0.18em] whitespace-nowrap uppercase text-ink";
 
 export default function Header({ instagramUrl }: { instagramUrl: string }) {
   const [scrolled, setScrolled] = useState(false);
@@ -41,19 +50,15 @@ export default function Header({ instagramUrl }: { instagramUrl: string }) {
     >
       <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-5 py-3 md:px-8 md:py-4">
         {/* left: nav (desktop) / menu button (mobile) */}
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="link-underline text-[0.72rem] tracking-[0.18em] uppercase text-ink"
-            >
+        <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
+          {NAV_LEFT.map((item) => (
+            <Link key={item.href} href={item.href} className={navLinkClass}>
               {item.label}
             </Link>
           ))}
         </nav>
         <button
-          className="justify-self-start p-2 -ml-2 md:hidden"
+          className="justify-self-start p-2 -ml-2 lg:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
@@ -76,8 +81,15 @@ export default function Header({ instagramUrl }: { instagramUrl: string }) {
           />
         </Link>
 
-        {/* right: instagram */}
-        <div className="flex items-center justify-end gap-4">
+        {/* right: nav (desktop) + instagram */}
+        <div className="flex items-center justify-end gap-7">
+          <nav className="hidden items-center gap-7 lg:flex" aria-label="Secondary">
+            {NAV_RIGHT.map((item) => (
+              <Link key={item.href} href={item.href} className={navLinkClass}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
           <a
             href={instagramUrl}
             target="_blank"
@@ -99,7 +111,7 @@ export default function Header({ instagramUrl }: { instagramUrl: string }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute inset-x-0 top-full flex h-[calc(100dvh-100%)] flex-col gap-2 bg-cream px-8 pt-10 md:hidden"
+            className="absolute inset-x-0 top-full flex h-[calc(100dvh-100%)] flex-col gap-2 bg-cream px-8 pt-10 lg:hidden"
           >
             {NAV.map((item, i) => (
               <motion.div

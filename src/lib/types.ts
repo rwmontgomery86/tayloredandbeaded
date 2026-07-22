@@ -42,7 +42,7 @@ export interface FaqItemData {
   id: string;
   question: string;
   answer: string;
-  category: "orders" | "shipping" | "care" | "general";
+  category: "orders" | "shipping" | "care" | "general" | "permanent-jewelry";
 }
 
 export interface CareGuideData {

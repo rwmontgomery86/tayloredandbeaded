@@ -28,6 +28,7 @@ export default defineType({
           { title: "Shipping", value: "shipping" },
           { title: "Care", value: "care" },
           { title: "General", value: "general" },
+          { title: "Permanent Jewelry", value: "permanent-jewelry" },
         ],
       },
       initialValue: "general",

@@ -13,7 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default async function FaqPage() {
-  const [faq, care] = await Promise.all([getFaq(), getCareGuide()]);
+  const [allFaq, care] = await Promise.all([getFaq(), getCareGuide()]);
+  // Permanent-jewelry FAQs live on /permanent-jewelry; mixed into this
+  // unlabeled list they contradict the beaded-jewelry care advice
+  // (welded chains are shower-safe, strung beads are not).
+  const faq = allFaq.filter((f) => f.category !== "permanent-jewelry");
 
   return (
     <>
