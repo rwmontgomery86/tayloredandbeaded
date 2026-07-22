@@ -143,14 +143,25 @@ export default function VariantLab({
         <p className="eyebrow mb-6 text-center">Side by side</p>
         <div className="grid gap-6 md:grid-cols-3">
           {variants.map((v, i) => (
-            <button
+            // div+role, not <button>: previews may contain real buttons
+            // (accordions, CTAs) and nested buttons are invalid HTML
+            <div
               key={v.id}
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 setActive(i);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setActive(i);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
               className={cn(
-                "overflow-hidden rounded-2xl border text-left transition-colors",
+                "cursor-pointer overflow-hidden rounded-2xl border text-left transition-colors",
                 i === active
                   ? "border-ink"
                   : "border-ink/10 hover:border-ink/40",
@@ -167,7 +178,7 @@ export default function VariantLab({
                   {v.blurb}
                 </p>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       </div>
