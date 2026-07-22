@@ -12,19 +12,25 @@ export const metadata: Metadata = {
     "Inquire about a piece, ask a question, or just say hi — Taylor reads every message.",
 };
 
+const TOPIC_SUBJECTS: Record<string, string> = {
+  "permanent-jewelry": "Permanent jewelry — book a fitting",
+  "permanent-jewelry-event": "Permanent jewelry — event / pop-up inquiry",
+};
+
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ piece?: string; sold?: string }>;
+  searchParams: Promise<{ piece?: string; sold?: string; topic?: string }>;
 }) {
-  const { piece, sold } = await searchParams;
+  const { piece, sold, topic } = await searchParams;
   const settings = await getSettings();
   const product = piece ? await getProduct(piece) : null;
+  const topicSubject = topic ? TOPIC_SUBJECTS[topic] : undefined;
   const defaultSubject = product
     ? sold
       ? `A piece like "${product.name}"`
       : `Inquiry: ${product.name}`
-    : undefined;
+    : topicSubject;
 
   return (
     <Section className="overflow-hidden pt-12 md:pt-16">
@@ -82,6 +88,12 @@ export default async function ContactPage({
                     it&rsquo;s a beauty!
                   </>
                 )}
+              </p>
+            )}
+            {!product && topicSubject && (
+              <p className="mb-5 rounded-2xl bg-blush/50 px-5 py-3.5 text-sm text-ink">
+                Asking about permanent jewelry — lovely! Tell Taylor your date
+                or occasion and she&rsquo;ll reply with all the details.
               </p>
             )}
             <ContactForm defaultSubject={defaultSubject} />

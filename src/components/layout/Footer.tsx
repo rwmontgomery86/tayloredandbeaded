@@ -12,6 +12,7 @@ const HELP_LINKS = [
 
 const COMPANY_LINKS = [
   { href: "/about", label: "About Taylor" },
+  { href: "/permanent-jewelry", label: "Permanent Jewelry" },
   { href: "/collections", label: "Collections" },
   { href: "/shop?category=new-arrivals", label: "New Arrivals" },
 ];
