@@ -149,6 +149,7 @@ export default function VariantLab({
               key={v.id}
               role="button"
               tabIndex={0}
+              aria-pressed={i === active}
               onClick={() => {
                 setActive(i);
                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -161,7 +162,7 @@ export default function VariantLab({
                 }
               }}
               className={cn(
-                "cursor-pointer overflow-hidden rounded-2xl border text-left transition-colors",
+                "cursor-pointer overflow-hidden rounded-2xl border transition-colors outline-none text-left focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2",
                 i === active
                   ? "border-ink"
                   : "border-ink/10 hover:border-ink/40",

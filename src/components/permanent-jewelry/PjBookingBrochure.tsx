@@ -62,6 +62,7 @@ export default function PjBookingBrochure({
                   width={PHOTOS.event.width}
                   height={PHOTOS.event.height}
                   sizes="(min-width: 768px) 38vw, 90vw"
+                  priority
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="p-7 md:p-8">
