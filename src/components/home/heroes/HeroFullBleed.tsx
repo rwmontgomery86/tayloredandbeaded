@@ -37,7 +37,7 @@ export default function HeroFullBleed() {
           alt="Layered pink, magenta, and coral beaded necklaces with gold accents draped over a white dish on cream satin"
           fill
           preload
-          sizes="100vw"
+          sizes="(min-width: 768px) 140vw, 100vw"
           className="object-cover object-[60%_55%] md:object-[50%_55%]"
         />
       </div>
