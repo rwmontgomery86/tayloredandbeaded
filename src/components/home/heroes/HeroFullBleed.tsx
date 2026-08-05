@@ -28,23 +28,34 @@ export default function HeroFullBleed() {
 
   return (
     <section className="relative flex min-h-[88svh] items-end overflow-hidden md:min-h-[82vh] md:items-center">
-      <Image
-        src="/photos/hero-beads-wide.png"
-        alt="Colorful hand-strung beaded necklaces resting on warm linen"
-        fill
-        preload
-        sizes="100vw"
-        className="object-cover object-[68%_50%] md:object-[75%_50%]"
-      />
-      {/* soft cream wash keeps ink text readable over the linen — desktop
-          only; on phones the frosted card provides the readable surface */}
+      {/* on desktop the frame is wider than the viewport with its left edge
+          pinned, sliding the composition right so the headline sits on open
+          satin; the section's overflow-hidden crops the excess */}
+      <div className="absolute inset-y-0 left-0 w-full md:w-[140%]">
+        <Image
+          src="/photos/hero-necklaces-wide.jpg"
+          alt="Layered pink, magenta, and coral beaded necklaces with gold accents draped over a white dish on cream satin"
+          fill
+          preload
+          sizes="100vw"
+          className="object-cover object-[60%_55%] md:object-[50%_55%]"
+        />
+      </div>
+      {/* readability aids are localized so the photo keeps its saturation:
+          a light wash over the left half only, plus a blurred cream glow
+          directly behind the text block — desktop only; on phones the
+          frosted card provides the readable surface */}
       <div
         aria-hidden
-        className="absolute inset-0 hidden bg-gradient-to-r from-cream/75 via-cream/25 to-transparent md:block"
+        className="absolute inset-y-0 left-0 hidden w-1/2 bg-gradient-to-r from-cream/45 to-transparent md:block"
       />
 
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-4 md:px-8 md:pb-0">
-        <div className="rounded-[1.75rem] border border-white/50 bg-cream/80 px-6 pt-7 pb-6 text-center shadow-[0_18px_50px_-20px_rgba(51,54,58,0.35)] backdrop-blur-lg md:max-w-xl md:rounded-none md:border-0 md:bg-transparent md:px-0 md:py-20 md:text-left md:shadow-none md:backdrop-blur-none">
+        <div
+          aria-hidden
+          className="absolute top-1/2 -left-24 hidden h-[120%] w-[42rem] -translate-y-1/2 rounded-full bg-cream/45 blur-3xl md:block"
+        />
+        <div className="relative rounded-[1.75rem] border border-white/50 bg-cream/80 px-6 pt-7 pb-6 text-center shadow-[0_18px_50px_-20px_rgba(51,54,58,0.35)] backdrop-blur-lg md:max-w-xl md:rounded-none md:border-0 md:bg-transparent md:px-0 md:py-20 md:text-left md:shadow-none md:backdrop-blur-none">
           <motion.p
             className="eyebrow text-[0.65rem] md:text-[0.75rem]"
             {...rise(0.05)}
