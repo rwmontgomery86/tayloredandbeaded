@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# staging area for raw photos from Taylor, not served/committed
+incoming-images/
