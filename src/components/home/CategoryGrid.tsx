@@ -15,7 +15,7 @@ const CARDS = [
   {
     slug: NEW_ARRIVALS_SLUG,
     title: "New Arrivals",
-    image: "/products/necklace-warm-tones.png",
+    image: "/products/category-new-arrivals.jpg",
   },
 ];
 
