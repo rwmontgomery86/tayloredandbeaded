@@ -25,8 +25,8 @@ export default function MakerStoryBand({ teaser }: { teaser?: string }) {
             <div className="relative mx-auto max-w-sm md:max-w-none">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
                 <Image
-                  src="/photos/taylor.png"
-                  alt="Taylor, the maker behind Taylored & Beaded"
+                  src="/photos/taylor-holding-necklaces.jpg"
+                  alt="Taylor holding handfuls of beaded necklaces"
                   fill
                   sizes="(min-width: 768px) 40vw, 85vw"
                   className="object-cover object-[50%_12%]"

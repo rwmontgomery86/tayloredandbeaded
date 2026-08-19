@@ -24,12 +24,12 @@ export default function AboutQuietLetter() {
               <div className="relative mx-auto max-w-sm md:max-w-none">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
                   <Image
-                    src="/photos/taylor.png"
-                    alt="Taylor, founder of Taylored & Beaded"
+                    src="/photos/taylor-seated.jpg"
+                    alt="Taylor seated in the studio, necklaces draped from both hands"
                     fill
                     priority
                     sizes="(min-width: 768px) 40vw, 85vw"
-                    className="object-cover object-[50%_15%]"
+                    className="object-cover object-[50%_35%]"
                   />
                 </div>
                 <p className="mt-6 text-center font-serif text-xl italic text-ink-soft">

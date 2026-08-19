@@ -31,7 +31,7 @@ export const CATEGORIES: Category[] = [
     slug: "bag-charms",
     title: "Bag Charms",
     basePrice: 15,
-    image: "/products/bag-charm-confetti.png",
+    image: "/products/bag-charm-taylored.jpg",
   },
 ];
 
