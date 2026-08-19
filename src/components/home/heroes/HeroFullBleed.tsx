@@ -12,8 +12,7 @@ import { gentleEase } from "@/components/motion/ease";
  * energy; the product is the hero.
  *
  * On phones the negative space disappears, so the content block becomes
- * a frosted-glass card anchored to the bottom of the frame (the adopted
- * "Frosted Panel" variant from /lab/hero-mobile).
+ * a frosted-glass card anchored to the bottom of the frame.
  */
 export default function HeroFullBleed() {
   const reduce = useReducedMotion();
