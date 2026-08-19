@@ -20,8 +20,7 @@ import {
 } from "./content";
 
 /**
- * "Booking Brochure" — the adopted /permanent-jewelry page layout
- * (winner of the /lab/permanent-jewelry comparison).
+ * "Booking Brochure" — the /permanent-jewelry page layout.
  * A service page built to convert: a sticky booking card keeps the
  * event inquiry in view while the story, steps, and FAQ scroll beside
  * it in a single editorial column.
