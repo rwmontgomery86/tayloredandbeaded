@@ -33,8 +33,8 @@ export default function HeroFullBleed() {
           satin; the section's overflow-hidden crops the excess */}
       <div className="absolute inset-y-0 left-0 w-full md:w-[140%]">
         <Image
-          src="/photos/hero-necklaces-wide.jpg"
-          alt="Layered pink, magenta, and coral beaded necklaces with gold accents draped over a white dish on cream satin"
+          src="/photos/hero-flatlay-wide.jpg"
+          alt="Pink and orange beaded necklaces arranged on a linen jewelry tray with Taylored & Beaded cards"
           fill
           preload
           sizes="(min-width: 768px) 140vw, 100vw"
