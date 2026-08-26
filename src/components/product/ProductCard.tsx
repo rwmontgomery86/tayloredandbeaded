@@ -3,6 +3,7 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import type { ProductCardData } from "@/lib/types";
 import AvailabilityBadge from "./AvailabilityBadge";
+import CuratedBadge from "./CuratedBadge";
 import PlaceholderImage from "./PlaceholderImage";
 
 export default function ProductCard({
@@ -29,7 +30,11 @@ export default function ProductCard({
           )}
         </div>
         <div className="absolute top-3 left-3 flex flex-col items-start gap-2">
-          <AvailabilityBadge availability={product.availability} />
+          {product.origin === "curated" ? (
+            <CuratedBadge />
+          ) : (
+            <AvailabilityBadge availability={product.availability} />
+          )}
           {product.sold && (
             <span className="rounded-full bg-cream/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
               Sold

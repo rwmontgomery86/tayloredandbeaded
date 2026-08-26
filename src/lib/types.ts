@@ -17,6 +17,7 @@ export interface CustomizationData {
 }
 
 export type ProductAvailability = "year-round" | "premade";
+export type ProductOrigin = "handmade" | "curated";
 
 export interface ProductCardData {
   id: string;
@@ -24,6 +25,7 @@ export interface ProductCardData {
   slug: string;
   category: CategorySlug;
   availability: ProductAvailability;
+  origin: ProductOrigin;
   /** Final display price (per-product override or category base). */
   price: number;
   image: string | null;

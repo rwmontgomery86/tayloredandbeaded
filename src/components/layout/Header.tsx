@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { InstagramIcon, MenuIcon, CloseIcon } from "@/components/ui/icons";
 
-// Five links no longer fit on one side of the centered logo, so the
+// Six links no longer fit on one side of the centered logo, so the
 // desktop nav splits around it; the mobile panel renders them all.
 const NAV_LEFT = [
   { href: "/shop", label: "Shop" },
@@ -15,6 +15,7 @@ const NAV_LEFT = [
   { href: "/permanent-jewelry", label: "Permanent Jewelry" },
 ];
 const NAV_RIGHT = [
+  { href: "/collections/the-edit", label: "The Edit" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];

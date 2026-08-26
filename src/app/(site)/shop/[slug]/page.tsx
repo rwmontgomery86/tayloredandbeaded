@@ -7,6 +7,7 @@ import Reveal from "@/components/motion/Reveal";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductCard from "@/components/product/ProductCard";
 import AvailabilityBadge from "@/components/product/AvailabilityBadge";
+import CuratedBadge from "@/components/product/CuratedBadge";
 import { HeartIcon } from "@/components/ui/icons";
 import { getProduct, getProductSlugs } from "@/lib/data";
 import { categoryTitle } from "@/lib/categories";
@@ -31,7 +32,9 @@ export async function generateMetadata({
     title: product.name,
     description:
       product.description ??
-      `${product.name}, a ${product.availability === "year-round" ? "made-to-order" : "one-of-a-kind"} handmade piece by Taylored & Beaded.`,
+      (product.origin === "curated"
+        ? `${product.name}, a necklace curated by Taylor for The Edit.`
+        : `${product.name}, a ${product.availability === "year-round" ? "made-to-order" : "one-of-a-kind"} handmade piece by Taylored & Beaded.`),
   };
 }
 
@@ -53,10 +56,16 @@ export default async function ProductPage({
           </Link>
           <span className="mx-2">/</span>
           <Link
-            href={`/shop?category=${product.category}`}
+            href={
+              product.origin === "curated"
+                ? "/collections/the-edit"
+                : `/shop?category=${product.category}`
+            }
             className="link-underline"
           >
-            {categoryTitle(product.category)}
+            {product.origin === "curated"
+              ? "The Edit"
+              : categoryTitle(product.category)}
           </Link>
         </nav>
 
@@ -67,7 +76,11 @@ export default async function ProductPage({
 
           <Reveal delay={0.08} className="md:pt-4">
             <div className="flex flex-wrap items-center gap-3">
-              <AvailabilityBadge availability={product.availability} />
+              {product.origin === "curated" ? (
+                <CuratedBadge />
+              ) : (
+                <AvailabilityBadge availability={product.availability} />
+              )}
               {product.sold && (
                 <span className="rounded-full bg-cream-dark px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
                   Sold
@@ -130,8 +143,9 @@ export default async function ProductPage({
                     Ask about a similar piece
                   </Button>
                   <p className="text-xs text-ink-soft">
-                    This one found a home, but Taylor can make something in the
-                    same spirit.
+                    {product.origin === "curated"
+                      ? "This one found a home, but Taylor may be able to source something similar."
+                      : "This one found a home, but Taylor can make something in the same spirit."}
                   </p>
                 </>
               ) : (
@@ -143,9 +157,11 @@ export default async function ProductPage({
 
             <p className="mt-6 flex items-center gap-2 text-xs text-ink-soft">
               <HeartIcon size={12} filled className="text-mauve" />
-              {product.availability === "year-round"
-                ? "Made to order"
-                : "One of a kind"}
+              {product.origin === "curated"
+                ? "Selected by Taylor"
+                : product.availability === "year-round"
+                  ? "Made to order"
+                  : "One of a kind"}
               <span aria-hidden>&middot;</span>
               Beautifully packaged &amp; gift ready
             </p>

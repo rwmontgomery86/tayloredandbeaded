@@ -102,6 +102,21 @@ export default defineType({
       description: "Shown in New Arrivals. Untick as pieces get older.",
     }),
     defineField({
+      name: "origin",
+      title: "Origin",
+      type: "string",
+      options: {
+        list: [
+          { title: "Handmade by Taylor", value: "handmade" },
+          { title: "Curated by Taylor", value: "curated" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "handmade",
+      description:
+        "Existing products without a selection are treated as handmade.",
+    }),
+    defineField({
       name: "availability",
       title: "Availability type",
       type: "string",

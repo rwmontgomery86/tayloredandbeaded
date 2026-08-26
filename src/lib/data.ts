@@ -38,6 +38,7 @@ import type {
   ProductAvailability,
   ProductCardData,
   ProductDetailData,
+  ProductOrigin,
   SiteSettingsData,
 } from "./types";
 
@@ -115,11 +116,16 @@ interface SanityCard {
   featured?: boolean;
   newArrival?: boolean;
   availability?: string;
+  origin?: string;
   status?: string;
 }
 
 function normalizeAvailability(value?: string): ProductAvailability {
   return value === "year-round" ? "year-round" : "premade";
+}
+
+function normalizeOrigin(value?: string): ProductOrigin {
+  return value === "curated" ? "curated" : "handmade";
 }
 
 function normalizeCard(p: SanityCard, pricing: PricingMap): ProductCardData {
@@ -131,6 +137,7 @@ function normalizeCard(p: SanityCard, pricing: PricingMap): ProductCardData {
     slug: p.slug,
     category: p.category,
     availability,
+    origin: normalizeOrigin(p.origin),
     price: p.price ?? pricing[p.category] ?? 0,
     image: p.image ? urlFor(p.image as never, 800) : null,
     colors: (p.colors ?? []).filter((c): c is { hex: string; label?: string } =>
@@ -159,11 +166,12 @@ export async function getProducts(
   ]);
   if (cards === null) {
     return SEED_PRODUCTS.filter((p) =>
-      !category || category === "all"
+      p.origin === "handmade" &&
+      (!category || category === "all"
         ? true
         : category === NEW_ARRIVALS_SLUG
           ? p.newArrival
-          : p.category === category,
+          : p.category === category),
     );
   }
   return cards.map((c) => normalizeCard(c, pricing));
@@ -175,7 +183,10 @@ export async function getFeaturedProducts(): Promise<ProductCardData[]> {
     getPricing(),
   ]);
   if (cards === null) {
-    return SEED_PRODUCTS.filter((p) => SEED_FEATURED_SLUGS.includes(p.slug));
+    return SEED_PRODUCTS.filter(
+      (p) =>
+        p.origin === "handmade" && SEED_FEATURED_SLUGS.includes(p.slug),
+    );
   }
   return cards.map((c) => normalizeCard(c, pricing));
 }
@@ -209,6 +220,7 @@ export async function getProduct(
     slug: p.slug,
     category: p.category,
     availability,
+    origin: normalizeOrigin(p.origin),
     price: p.price ?? pricing[p.category] ?? 0,
     images: (p.images ?? [])
       .map((i) => urlFor(i as never, 1600))

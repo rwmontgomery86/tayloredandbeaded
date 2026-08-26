@@ -11,15 +11,15 @@ handmade necklace pages never encounters a curated piece mixed in.
 **Blocked by:** 02 — Year-round vs premade (serializes product-card badge
 changes so the two tickets don't collide on the same components).
 
-**Status:** ready-for-agent
+**Status:** done (2026-08-26)
 
-- [ ] Product schema gains an origin field (handmade | curated) defaulting to
+- [x] Product schema gains an origin field (handmade | curated) defaulting to
       handmade for existing documents
-- [ ] Handmade category listings and year-round queries exclude curated
+- [x] Handmade category listings and year-round queries exclude curated
       products
-- [ ] Curated products carry a visible "Curated" badge on cards and detail
+- [x] Curated products carry a visible "Curated" badge on cards and detail
       pages
-- [ ] The Edit exists as a collection document with the brief's intro copy,
+- [x] The Edit exists as a collection document with the brief's intro copy,
       rendered by the existing collection page machinery, and is seeded
-- [ ] The Edit is reachable from site navigation
-- [ ] Seed fallback data covers the curated path
+- [x] The Edit is reachable from site navigation
+- [x] Seed fallback data covers the curated path

@@ -90,6 +90,7 @@ async function run() {
       name: p.name,
       slug: { _type: "slug", current: p.slug },
       category: p.category,
+      origin: p.origin,
       availability: p.availability,
       // No price override: seed prices all match the category pricing below.
       ...(p.images.length > 0
