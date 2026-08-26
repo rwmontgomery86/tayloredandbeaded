@@ -13,6 +13,7 @@ const CARD = `{
   colors[]{ label, hex },
   featured,
   newArrival,
+  "availability": coalesce(availability, "premade"),
   status
 }`;
 
@@ -35,6 +36,7 @@ export const PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $s
   materials,
   colors[]{ label, hex },
   newArrival,
+  "availability": coalesce(availability, "premade"),
   status,
   "related": *[_type == "product" && category == ^.category && _id != ^._id && ${PRODUCT_CATEGORY_FILTER}] | order(_createdAt desc)[0...4] ${CARD}
 }`;

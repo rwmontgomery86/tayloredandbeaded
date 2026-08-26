@@ -5,11 +5,14 @@ export interface Swatch {
   hex: string;
 }
 
+export type ProductAvailability = "year-round" | "premade";
+
 export interface ProductCardData {
   id: string;
   name: string;
   slug: string;
   category: CategorySlug;
+  availability: ProductAvailability;
   /** Final display price (per-product override or category base). */
   price: number;
   image: string | null;

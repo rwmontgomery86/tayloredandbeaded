@@ -13,17 +13,17 @@ descriptions and no images, awaiting photos in the Studio.
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** done (2026-08-26)
 
-- [ ] Product schema gains an availability field (year-round | premade) with a
+- [x] Product schema gains an availability field (year-round | premade) with a
       sensible default for existing documents
-- [ ] Data layer exposes availability; year-round products never render a sold
+- [x] Data layer exposes availability; year-round products never render a sold
       state, premade products keep the existing sold behavior
-- [ ] Cards and detail pages show a clear made-to-order vs one-of-a-kind badge
-- [ ] The necklaces browsing experience clearly presents the year-round
+- [x] Cards and detail pages show a clear made-to-order vs one-of-a-kind badge
+- [x] The necklaces browsing experience clearly presents the year-round
       collection, distinguished from premade pieces
-- [ ] Seed script (idempotent) creates the 14 named styles as year-round
+- [x] Seed script (idempotent) creates the 14 named styles as year-round
       handmade necklaces with brief descriptions and no images
-- [ ] Cards render acceptably for image-less products
-- [ ] Seed fallback data reflects the new field so the unconfigured-Sanity
+- [x] Cards render acceptably for image-less products
+- [x] Seed fallback data reflects the new field so the unconfigured-Sanity
       path behaves identically

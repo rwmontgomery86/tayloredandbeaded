@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import type { ProductCardData } from "@/lib/types";
+import AvailabilityBadge from "./AvailabilityBadge";
 import PlaceholderImage from "./PlaceholderImage";
 
 export default function ProductCard({
@@ -27,16 +28,19 @@ export default function ProductCard({
             <PlaceholderImage />
           )}
         </div>
-        {product.sold && (
-          <span className="absolute top-3 left-3 rounded-full bg-cream/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
-            Sold
-          </span>
-        )}
-        {!product.sold && product.newArrival && (
-          <span className="absolute top-3 left-3 rounded-full bg-blush/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink">
-            New
-          </span>
-        )}
+        <div className="absolute top-3 left-3 flex flex-col items-start gap-2">
+          <AvailabilityBadge availability={product.availability} />
+          {product.sold && (
+            <span className="rounded-full bg-cream/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
+              Sold
+            </span>
+          )}
+          {!product.sold && product.newArrival && (
+            <span className="rounded-full bg-blush/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink">
+              New
+            </span>
+          )}
+        </div>
       </div>
       <div className="mt-4 text-center">
         <h3 className="font-serif text-lg leading-snug text-ink group-hover:text-mauve-deep transition-colors">

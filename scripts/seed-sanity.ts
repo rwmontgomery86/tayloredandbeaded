@@ -10,6 +10,7 @@ import path from "node:path";
 import { getCliClient } from "sanity/cli";
 import {
   SEED_PRODUCTS,
+  SEED_FEATURED_SLUGS,
   SEED_COLLECTIONS,
   SEED_FAQ,
   SEED_CARE_GUIDE,
@@ -88,10 +89,15 @@ async function run() {
       name: p.name,
       slug: { _type: "slug", current: p.slug },
       category: p.category,
+      availability: p.availability,
       // No price override: seed prices all match the category pricing below.
-      images: p.images.map((img, i) =>
-        imageRef(assets.get(img)!, `${p.slug}-img${i}`),
-      ),
+      ...(p.images.length > 0
+        ? {
+            images: p.images.map((img, i) =>
+              imageRef(assets.get(img)!, `${p.slug}-img${i}`),
+            ),
+          }
+        : {}),
       description: p.description,
       materials: p.materials,
       colors: p.colors?.map((c, i) => ({
@@ -100,7 +106,7 @@ async function run() {
         ...(("label" in c && c.label) ? { label: c.label } : {}),
         hex: c.hex,
       })),
-      featured: true,
+      featured: SEED_FEATURED_SLUGS.includes(p.slug),
       newArrival: Boolean(p.newArrival),
       status: "available",
     });

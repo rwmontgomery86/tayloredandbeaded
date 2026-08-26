@@ -31,6 +31,7 @@ import type {
   CollectionDetailData,
   FaqItemData,
   PricingMap,
+  ProductAvailability,
   ProductCardData,
   ProductDetailData,
   SiteSettingsData,
@@ -70,22 +71,30 @@ interface SanityCard {
   colors?: { label?: string; hex?: string }[];
   featured?: boolean;
   newArrival?: boolean;
+  availability?: string;
   status?: string;
 }
 
+function normalizeAvailability(value?: string): ProductAvailability {
+  return value === "year-round" ? "year-round" : "premade";
+}
+
 function normalizeCard(p: SanityCard, pricing: PricingMap): ProductCardData {
+  const availability = normalizeAvailability(p.availability);
+
   return {
     id: p._id,
     name: p.name,
     slug: p.slug,
     category: p.category,
+    availability,
     price: p.price ?? pricing[p.category] ?? 0,
     image: p.image ? urlFor(p.image as never, 800) : null,
     colors: (p.colors ?? []).filter((c): c is { hex: string; label?: string } =>
       Boolean(c.hex),
     ),
     newArrival: p.newArrival,
-    sold: p.status === "sold",
+    sold: availability === "premade" && p.status === "sold",
   };
 }
 
@@ -149,11 +158,14 @@ export async function getProduct(
     // Sanity unconfigured (fall back to seed) or genuinely not found
     return seedProductDetail(slug);
   }
+  const availability = normalizeAvailability(p.availability);
+
   return {
     id: p._id,
     name: p.name,
     slug: p.slug,
     category: p.category,
+    availability,
     price: p.price ?? pricing[p.category] ?? 0,
     images: (p.images ?? [])
       .map((i) => urlFor(i as never, 1600))
@@ -164,7 +176,7 @@ export async function getProduct(
       Boolean(c.hex),
     ),
     newArrival: p.newArrival,
-    sold: p.status === "sold",
+    sold: availability === "premade" && p.status === "sold",
     related: (p.related ?? []).map((r) => normalizeCard(r, pricing)),
   };
 }

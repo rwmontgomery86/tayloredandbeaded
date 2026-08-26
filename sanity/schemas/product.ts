@@ -102,8 +102,23 @@ export default defineType({
       description: "Shown in New Arrivals. Untick as pieces get older.",
     }),
     defineField({
+      name: "availability",
+      title: "Availability type",
+      type: "string",
+      options: {
+        list: [
+          { title: "Made to order", value: "year-round" },
+          { title: "One of a kind", value: "premade" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "premade",
+      description:
+        "Existing products without a selection are treated as one of a kind.",
+    }),
+    defineField({
       name: "status",
-      title: "Availability",
+      title: "Sale status",
       type: "string",
       options: {
         list: [
@@ -113,6 +128,7 @@ export default defineType({
         layout: "radio",
       },
       initialValue: "available",
+      description: "Ignored for made-to-order products.",
     }),
   ],
   preview: {

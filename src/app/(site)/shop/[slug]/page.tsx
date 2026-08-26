@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Reveal from "@/components/motion/Reveal";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductCard from "@/components/product/ProductCard";
+import AvailabilityBadge from "@/components/product/AvailabilityBadge";
 import { HeartIcon } from "@/components/ui/icons";
 import { getProduct, getProductSlugs } from "@/lib/data";
 import { categoryTitle } from "@/lib/categories";
@@ -30,7 +31,7 @@ export async function generateMetadata({
     title: product.name,
     description:
       product.description ??
-      `${product.name} — a one-of-a-kind handmade piece by Taylored & Beaded.`,
+      `${product.name}, a ${product.availability === "year-round" ? "made-to-order" : "one-of-a-kind"} handmade piece by Taylored & Beaded.`,
   };
 }
 
@@ -66,6 +67,7 @@ export default async function ProductPage({
 
           <Reveal delay={0.08} className="md:pt-4">
             <div className="flex flex-wrap items-center gap-3">
+              <AvailabilityBadge availability={product.availability} />
               {product.sold && (
                 <span className="rounded-full bg-cream-dark px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
                   Sold
@@ -141,7 +143,11 @@ export default async function ProductPage({
 
             <p className="mt-6 flex items-center gap-2 text-xs text-ink-soft">
               <HeartIcon size={12} filled className="text-mauve" />
-              One-of-a-kind &middot; Beautifully packaged &amp; gift ready
+              {product.availability === "year-round"
+                ? "Made to order"
+                : "One of a kind"}
+              <span aria-hidden>&middot;</span>
+              Beautifully packaged &amp; gift ready
             </p>
           </Reveal>
         </div>
