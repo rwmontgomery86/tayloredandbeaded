@@ -11,6 +11,45 @@ export interface QuoteProduct {
   price?: number | null;
 }
 
+export interface AddOnAvailability {
+  initialCharm: boolean;
+  matchingBracelet: boolean;
+  bagScarf: boolean;
+  /** Free bag-charm choices: bead color, personalization, charms. */
+  bagCharmOptions: boolean;
+}
+
+/**
+ * The single home of "which add-ons does this product offer" — the request
+ * route, the configurator, and the product page must all read from here so
+ * the displayed and emailed quotes can never disagree.
+ */
+export function availableAddOns(product: {
+  category: CategorySlug;
+  availability: "year-round" | "premade";
+}): AddOnAvailability {
+  const isNecklace = product.category === "necklaces";
+  const isBagCharm = product.category === "bag-charms";
+  return {
+    initialCharm: isNecklace,
+    matchingBracelet: isNecklace && product.availability === "year-round",
+    bagScarf: isBagCharm,
+    bagCharmOptions: isBagCharm,
+  };
+}
+
+/** Whether a product page should render the configurator at all. */
+export function isConfigurable(product: {
+  category: CategorySlug;
+  availability: "year-round" | "premade";
+  origin: "handmade" | "curated";
+  sold?: boolean;
+}): boolean {
+  if (product.origin !== "handmade" || product.sold) return false;
+  const offers = availableAddOns(product);
+  return offers.initialCharm || offers.bagCharmOptions;
+}
+
 export interface QuoteConfiguration {
   initialCharm?: boolean;
   matchingBracelet?: boolean;

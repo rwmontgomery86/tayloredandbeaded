@@ -62,7 +62,7 @@ export const COLLECTION_BY_SLUG_QUERY = `*[_type == "collection" && slug.current
   coverImage,
   description,
   "intro": pt::text(intro),
-  "products": products[]->[${PRODUCT_CATEGORY_FILTER}] ${CARD}
+  "products": products[]-> ${CARD}
 }`;
 
 export const COLLECTION_SLUGS_QUERY = `*[_type == "collection" && defined(slug.current)].slug.current`;

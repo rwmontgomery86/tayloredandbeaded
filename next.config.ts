@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         destination: "/shop?category=all",
         permanent: true,
       },
+      // Retired anklet product pages: preserve old links instead of 404ing.
+      {
+        source: "/shop/seashore-anklet",
+        destination: "/shop?category=all",
+        permanent: true,
+      },
     ];
   },
   images: {

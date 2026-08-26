@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
 import { getCustomization, getPricing, getProduct } from "@/lib/data";
-import { calculateQuote, type QuoteConfiguration } from "@/lib/quote";
+import {
+  availableAddOns,
+  calculateQuote,
+  type QuoteConfiguration,
+} from "@/lib/quote";
 import { formatPrice } from "@/lib/utils";
 
 const schema = z.object({
@@ -13,11 +17,13 @@ const schema = z.object({
       /** The letter(s) for the initial charm; required when initialCharm is on. */
       initial: z.string().trim().min(1).max(2).optional(),
       matchingBracelet: z.boolean().optional(),
-      // Bag charm options
-      beadColor: z.string().trim().max(40).optional(),
+      // Bag charm options. Loose length caps only — real validation is
+      // membership in the Studio-managed Customization options below, so
+      // Taylor growing the option lists can never invalidate the form.
+      beadColor: z.string().trim().max(200).optional(),
       /** Initial or short name strung into the charm. */
       personalization: z.string().trim().max(12).optional(),
-      charms: z.array(z.string().trim().max(40)).max(10).optional(),
+      charms: z.array(z.string().trim().max(200)).max(50).optional(),
       bagScarf: z.boolean().optional(),
     })
     .default({}),
@@ -28,21 +34,39 @@ const schema = z.object({
   elapsed: z.number().optional(),
 });
 
-/** Drop add-ons the product doesn't offer; the server, not the client, decides. */
+/** Mask the request's add-ons by what the product actually offers. */
 function allowedConfiguration(
-  category: string,
-  availability: string,
+  product: Parameters<typeof availableAddOns>[0],
   config: z.infer<typeof schema>["config"],
 ): QuoteConfiguration {
-  const isNecklace = category === "necklaces";
+  const offers = availableAddOns(product);
   return {
-    initialCharm: isNecklace && Boolean(config.initialCharm),
+    initialCharm: offers.initialCharm && Boolean(config.initialCharm),
     matchingBracelet:
-      isNecklace &&
-      availability === "year-round" &&
-      Boolean(config.matchingBracelet),
-    bagScarf: category === "bag-charms" && Boolean(config.bagScarf),
+      offers.matchingBracelet && Boolean(config.matchingBracelet),
+    bagScarf: offers.bagScarf && Boolean(config.bagScarf),
   };
+}
+
+// Best-effort per-IP throttle. In-memory state is per server instance, so this
+// is a speed bump rather than a wall — but it turns "unlimited emails per
+// second" into a trickle, which is what protects the Resend account.
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+const recentRequests = new Map<string, number[]>();
+
+function rateLimited(req: Request): boolean {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (!ip) return false;
+  const now = Date.now();
+  const stamps = (recentRequests.get(ip) ?? []).filter(
+    (t) => now - t < RATE_WINDOW_MS,
+  );
+  if (stamps.length >= RATE_LIMIT) return true;
+  stamps.push(now);
+  recentRequests.set(ip, stamps);
+  if (recentRequests.size > 5000) recentRequests.clear(); // memory backstop
+  return false;
 }
 
 export async function POST(req: Request) {
@@ -62,8 +86,21 @@ export async function POST(req: Request) {
   }
   const { slug, config, name, email, notes, website, elapsed } = parsed.data;
 
-  // Spam guards: filled honeypot or superhuman submit speed → pretend success
-  if (website || (typeof elapsed === "number" && elapsed < 3000)) {
+  if (rateLimited(req)) {
+    return NextResponse.json(
+      { ok: false, error: "Too many requests — please try again later" },
+      { status: 429 },
+    );
+  }
+
+  // Spam guards: filled honeypot or superhuman submit speed → pretend success.
+  // Log the drop so a false positive is at least visible server-side.
+  if (website || (typeof elapsed === "number" && elapsed < 1500)) {
+    console.warn("[order-request] spam guard dropped a submission", {
+      slug,
+      honeypot: Boolean(website),
+      elapsed,
+    });
     return NextResponse.json({ ok: true });
   }
 
@@ -92,12 +129,40 @@ export async function POST(req: Request) {
     getCustomization(),
     getPricing(),
   ]);
+
+  // Free bag-charm choices, validated against Taylor's Studio-managed options.
+  // Unknown values are rejected, not dropped — a silently incomplete order
+  // email would be worse than asking the shopper to reload and retry.
+  const detailLines: string[] = [];
+  if (product.category === "bag-charms") {
+    const color = customization.beadColors.find(
+      (c) => c.label === config.beadColor,
+    );
+    if (!color) {
+      return NextResponse.json(
+        { ok: false, error: "Please pick a bead color" },
+        { status: 400 },
+      );
+    }
+    const charms = config.charms ?? [];
+    if (charms.some((charm) => !customization.charmOptions.includes(charm))) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "The charm options changed — please refresh the page and pick again",
+        },
+        { status: 400 },
+      );
+    }
+    detailLines.push(`- Bead color: ${color.label}`);
+    if (charms.length) detailLines.push(`- Charms: ${charms.join(", ")}`);
+    if (config.personalization)
+      detailLines.push(`- Initial or name: “${config.personalization}”`);
+  }
+
   // Always recompute the total server-side — a client-sent total is never trusted.
-  const configuration = allowedConfiguration(
-    product.category,
-    product.availability,
-    config,
-  );
+  const configuration = allowedConfiguration(product, config);
   const quote = calculateQuote(product, configuration, customization, pricing);
 
   const configLines = quote.lines.map((line) => {
@@ -107,21 +172,6 @@ export async function POST(req: Request) {
         : "";
     return `- ${line.label}${detail}: ${formatPrice(line.amount)}`;
   });
-
-  // Free bag-charm choices, validated against Taylor's Studio-managed options.
-  const detailLines: string[] = [];
-  if (product.category === "bag-charms") {
-    const color = customization.beadColors.find(
-      (c) => c.label === config.beadColor,
-    );
-    if (color) detailLines.push(`- Bead color: ${color.label}`);
-    const charms = (config.charms ?? []).filter((charm) =>
-      customization.charmOptions.includes(charm),
-    );
-    if (charms.length) detailLines.push(`- Charms: ${charms.join(", ")}`);
-    if (config.personalization)
-      detailLines.push(`- Initial or name: “${config.personalization}”`);
-  }
 
   const summary = [
     ...configLines,
@@ -169,16 +219,20 @@ export async function POST(req: Request) {
   }
 
   // Confirmation copy to the shopper. Taylor already has the request, so a
-  // failure here shouldn't fail the whole submission.
+  // failure here shouldn't fail the whole submission — but the UI copy is
+  // told about it so it doesn't promise an inbox copy that never arrives.
+  // Deliberately excludes the free-text fields (name/notes): this email goes
+  // to an unverified address, and echoing caller-written text would make it
+  // a vehicle for spam sent from our domain.
   const confirmation = await resend.emails.send({
     from,
     to: email,
     subject: `Your request for the ${product.name} ♡`,
-    text: `Hi ${name},\n\nThank you for your request! Here's what you asked for:\n\n${summary}\n${notes ? `\nYour notes:\n${notes}\n` : ""}\nNo payment is taken online — Taylor will confirm your order, availability, and payment details by email soon.\n\nTaylored & Beaded`,
+    text: `Thank you for your request! Here's what you asked for:\n\n${summary}\n\nNo payment is taken online — Taylor will confirm your order, availability, and payment details by email soon.\n\nTaylored & Beaded`,
   });
   if (confirmation.error) {
     console.error("[order-request] confirmation error:", confirmation.error);
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, confirmationSent: !confirmation.error });
 }

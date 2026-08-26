@@ -139,14 +139,16 @@ describe("POST /api/order-request", () => {
     expect(sent[0].text).not.toContain("Matching bracelet");
   });
 
+  const confetti = {
+    ...parker,
+    name: "Confetti Bag Charm",
+    slug: "confetti-bag-charm",
+    category: "bag-charms" as const,
+    availability: "year-round" as const,
+  };
+
   it("carries bag-charm choices into the email and prices the scarf", async () => {
-    mocks.getProduct.mockResolvedValue({
-      ...parker,
-      name: "Confetti Bag Charm",
-      slug: "confetti-bag-charm",
-      category: "bag-charms",
-      availability: "premade",
-    });
+    mocks.getProduct.mockResolvedValue(confetti);
     const res = await POST(
       request({
         ...valid,
@@ -154,7 +156,7 @@ describe("POST /api/order-request", () => {
         config: {
           beadColor: "Seafoam Green",
           personalization: "MAMA",
-          charms: ["MAMA", "Bow", "Not A Real Charm"],
+          charms: ["MAMA", "Bow"],
           bagScarf: true,
           matchingBracelet: true, // not offered on bag charms — must be stripped
         },
@@ -166,9 +168,47 @@ describe("POST /api/order-request", () => {
     expect(text).toContain("Total: $30");
     expect(text).toContain("Bead color: Seafoam Green");
     expect(text).toContain("Charms: MAMA, Bow");
-    expect(text).not.toContain("Not A Real Charm");
     expect(text).toContain("Initial or name: “MAMA”");
     expect(text).not.toContain("Matching bracelet");
+  });
+
+  it("requires a valid bead color for bag charms", async () => {
+    mocks.getProduct.mockResolvedValue(confetti);
+    const missing = await POST(
+      request({ ...valid, slug: "confetti-bag-charm", config: {} }),
+    );
+    expect(missing.status).toBe(400);
+
+    const unknown = await POST(
+      request({
+        ...valid,
+        slug: "confetti-bag-charm",
+        config: { beadColor: "Chartreuse" },
+      }),
+    );
+    expect(unknown.status).toBe(400);
+    expect(sent).toHaveLength(0);
+  });
+
+  it("rejects charms that aren't in the configured options", async () => {
+    mocks.getProduct.mockResolvedValue(confetti);
+    const res = await POST(
+      request({
+        ...valid,
+        slug: "confetti-bag-charm",
+        config: { beadColor: "Pink", charms: ["MAMA", "Not A Real Charm"] },
+      }),
+    );
+    expect(res.status).toBe(400);
+    expect(sent).toHaveLength(0);
+  });
+
+  it("excludes shopper-written text from the confirmation email", async () => {
+    const res = await POST(request(valid));
+    expect(res.status).toBe(200);
+    const toShopper = sent[1];
+    expect(toShopper.text).not.toContain("For my sister!");
+    expect(toShopper.text).not.toContain("Jess");
   });
 
   it("does not price the scarf for non-bag-charm products", async () => {

@@ -1,3 +1,4 @@
+import { sanityConfigured } from "../../sanity/env";
 import { sanityFetch } from "../../sanity/lib/fetch";
 import { urlFor } from "../../sanity/lib/image";
 import {
@@ -165,6 +166,7 @@ export async function getProducts(
     getPricing(),
   ]);
   if (cards === null) {
+    if (sanityConfigured) return []; // fetch error: honest empty beats phantoms
     return SEED_PRODUCTS.filter((p) =>
       p.origin === "handmade" &&
       (!category || category === "all"
@@ -183,6 +185,7 @@ export async function getFeaturedProducts(): Promise<ProductCardData[]> {
     getPricing(),
   ]);
   if (cards === null) {
+    if (sanityConfigured) return [];
     return SEED_PRODUCTS.filter(
       (p) =>
         p.origin === "handmade" && SEED_FEATURED_SLUGS.includes(p.slug),
@@ -209,8 +212,10 @@ export async function getProduct(
     getPricing(),
   ]);
   if (p === null) {
-    // Sanity unconfigured (fall back to seed) or genuinely not found
-    return seedProductDetail(slug);
+    // Seed data only stands in while Sanity is unconfigured. With a live
+    // dataset, a missing/unpublished document is genuinely gone — serving the
+    // seed version would resurrect retired pieces as orderable phantoms.
+    return sanityConfigured ? null : seedProductDetail(slug);
   }
   const availability = normalizeAvailability(p.availability);
 
@@ -240,7 +245,8 @@ export async function getProductSlugs(): Promise<string[]> {
   const slugs = await sanityFetch<string[]>(PRODUCT_SLUGS_QUERY, {}, [
     "product",
   ]);
-  return slugs ?? SEED_PRODUCTS.map((p) => p.slug);
+  if (slugs !== null) return slugs;
+  return sanityConfigured ? [] : SEED_PRODUCTS.map((p) => p.slug);
 }
 
 /* ---------- collections ---------- */
@@ -259,7 +265,7 @@ export async function getCollections(): Promise<CollectionCardData[]> {
     {},
     ["collection"],
   );
-  if (cols === null) return SEED_COLLECTIONS;
+  if (cols === null) return sanityConfigured ? [] : SEED_COLLECTIONS;
   return cols.map((c) => ({
     id: c._id,
     title: c.title,
@@ -280,7 +286,10 @@ export async function getCollection(
     getPricing(),
   ]);
   if (c === null) {
-    return SEED_COLLECTIONS.find((s) => s.slug === slug) ?? null;
+    // Same rule as getProduct: seed only stands in while Sanity is unconfigured.
+    return sanityConfigured
+      ? null
+      : (SEED_COLLECTIONS.find((s) => s.slug === slug) ?? null);
   }
   return {
     id: c._id,
@@ -289,7 +298,14 @@ export async function getCollection(
     image: c.coverImage ? urlFor(c.coverImage as never, 1600) : null,
     description: c.description,
     intro: c.intro,
-    products: (c.products ?? []).map((p) => normalizeCard(p, pricing)),
+    // products[]-> yields null for broken references; drop those and any
+    // documents from retired categories before normalizing.
+    products: (c.products ?? [])
+      .filter(
+        (p): p is SanityCard =>
+          Boolean(p) && CATEGORIES.some((cat) => cat.slug === p.category),
+      )
+      .map((p) => normalizeCard(p, pricing)),
   };
 }
 
@@ -297,7 +313,8 @@ export async function getCollectionSlugs(): Promise<string[]> {
   const slugs = await sanityFetch<string[]>(COLLECTION_SLUGS_QUERY, {}, [
     "collection",
   ]);
-  return slugs ?? SEED_COLLECTIONS.map((c) => c.slug);
+  if (slugs !== null) return slugs;
+  return sanityConfigured ? [] : SEED_COLLECTIONS.map((c) => c.slug);
 }
 
 /* ---------- info content ---------- */

@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Button from "@/components/ui/Button";
-import { calculateQuote } from "@/lib/quote";
+import { availableAddOns, calculateQuote } from "@/lib/quote";
 import { formatPrice } from "@/lib/utils";
 import type { CustomizationData, PricingMap, ProductDetailData } from "@/lib/types";
 
@@ -35,11 +35,18 @@ export default function ProductConfigurator({
   const [bagScarf, setBagScarf] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>();
-  const [startedAt] = useState(() => Date.now());
+  const [confirmationSent, setConfirmationSent] = useState(true);
+  // The spam-guard clock starts at first interaction, not at mount, so a
+  // shopper with autofill isn't mistaken for a bot on a freshly loaded page.
+  const startedAt = useRef<number | null>(null);
+  const markStarted = () => {
+    startedAt.current ??= Date.now();
+  };
 
-  const isBagCharm = product.category === "bag-charms";
-  const isNecklace = product.category === "necklaces";
-  const offersBracelet = isNecklace && product.availability === "year-round";
+  const offers = availableAddOns(product);
+  const isBagCharm = offers.bagCharmOptions;
+  const isNecklace = offers.initialCharm;
+  const offersBracelet = offers.matchingBracelet;
 
   const quote = useMemo(
     () =>
@@ -65,6 +72,11 @@ export default function ProductConfigurator({
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (status === "pending") return;
+    if (isBagCharm && !beadColor) {
+      setStatus("error");
+      setError("Please pick a bead color");
+      return;
+    }
     setStatus("pending");
     setError(undefined);
     const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -88,11 +100,12 @@ export default function ProductConfigurator({
           email: data.email,
           notes: data.notes,
           website: data.website,
-          elapsed: Date.now() - startedAt,
+          elapsed: startedAt.current ? Date.now() - startedAt.current : 0,
         }),
       });
       const json = await res.json();
       if (!json.ok) throw new Error(json.error ?? "Something went wrong");
+      setConfirmationSent(json.confirmationSent !== false);
       setStatus("success");
     } catch (err) {
       setStatus("error");
@@ -110,15 +123,21 @@ export default function ProductConfigurator({
           Request sent! <em className="font-normal italic">Thank you ♡</em>
         </p>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink-soft">
-          You&rsquo;ll find a copy in your inbox. Taylor will confirm your
-          order, availability, and payment details by email soon.
+          {confirmationSent
+            ? "You'll find a copy in your inbox. Taylor will confirm your order, availability, and payment details by email soon."
+            : "Taylor has your request and will confirm your order, availability, and payment details by email soon."}
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form
+      onSubmit={onSubmit}
+      onFocusCapture={markStarted}
+      onPointerDownCapture={markStarted}
+      className="space-y-6"
+    >
       <fieldset className="space-y-3">
         <legend className="eyebrow mb-3 text-[0.65rem]">Make it yours</legend>
 

@@ -111,7 +111,8 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     slug: "confetti-bag-charm",
     category: "bag-charms",
     origin: "handmade",
-    availability: "premade",
+    // Bag charms are customized to order, so they are year-round by nature.
+    availability: "year-round",
     price: 15,
     image: "/products/bag-charm-confetti.png",
     images: ["/products/bag-charm-confetti.png"],

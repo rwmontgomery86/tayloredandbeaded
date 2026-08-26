@@ -1,7 +1,9 @@
 /**
  * One-time migration of the built-in seed content into Sanity, so the CMS
- * starts populated instead of empty. Idempotent: deterministic _ids, so
- * re-running updates rather than duplicates.
+ * starts populated instead of empty. Idempotent AND non-destructive:
+ * deterministic _ids with createIfNotExists, so re-running creates only
+ * documents that don't exist yet and never touches Studio edits (photos,
+ * prices, sold status stay exactly as Taylor left them).
  *
  * Run with:  npx sanity exec scripts/seed-sanity.ts --with-user-token
  */
@@ -84,7 +86,7 @@ async function run() {
   const tx = client.transaction();
 
   for (const p of SEED_PRODUCTS) {
-    tx.createOrReplace({
+    tx.createIfNotExists({
       _id: `product-${p.slug}`,
       _type: "product",
       name: p.name,
@@ -115,7 +117,7 @@ async function run() {
   }
 
   SEED_COLLECTIONS.forEach((c, order) => {
-    tx.createOrReplace({
+    tx.createIfNotExists({
       _id: `collection-${c.slug}`,
       _type: "collection",
       title: c.title,
@@ -134,7 +136,7 @@ async function run() {
 
   SEED_FAQ.forEach((f, order) => {
     const key = f.id.replace(/^seed-/, "");
-    tx.createOrReplace({
+    tx.createIfNotExists({
       _id: key,
       _type: "faqItem",
       question: f.question,
@@ -145,7 +147,7 @@ async function run() {
   });
 
   // Singleton _ids must match the documentIds pinned in sanity.config.ts.
-  tx.createOrReplace({
+  tx.createIfNotExists({
     _id: "careGuide",
     _type: "careGuide",
     title: SEED_CARE_GUIDE.title,
@@ -158,7 +160,7 @@ async function run() {
     })),
   });
 
-  tx.createOrReplace({
+  tx.createIfNotExists({
     _id: "pricing",
     _type: "pricing",
     necklaces: 25,
@@ -166,7 +168,7 @@ async function run() {
     bagCharms: 15,
   });
 
-  tx.createOrReplace({
+  tx.createIfNotExists({
     _id: "customization",
     _type: "customization",
     beadColors: SEED_CUSTOMIZATION.beadColors.map((color, i) => ({
@@ -179,7 +181,7 @@ async function run() {
     initialCharmPrice: SEED_CUSTOMIZATION.initialCharmPrice,
   });
 
-  tx.createOrReplace({
+  tx.createIfNotExists({
     _id: "siteSettings",
     _type: "siteSettings",
     announcementMessages: SEED_SETTINGS.announcementMessages,

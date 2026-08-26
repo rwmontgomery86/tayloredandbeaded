@@ -11,6 +11,7 @@ import CuratedBadge from "@/components/product/CuratedBadge";
 import { HeartIcon } from "@/components/ui/icons";
 import ProductConfigurator from "@/components/product/ProductConfigurator";
 import { getCustomization, getPricing, getProduct, getProductSlugs } from "@/lib/data";
+import { isConfigurable } from "@/lib/quote";
 import { categoryTitle } from "@/lib/categories";
 import { formatPrice } from "@/lib/utils";
 
@@ -48,10 +49,7 @@ export default async function ProductPage({
   const product = await getProduct(slug);
   if (!product) notFound();
 
-  const configurable =
-    product.origin === "handmade" &&
-    (product.category === "necklaces" || product.category === "bag-charms") &&
-    !product.sold;
+  const configurable = isConfigurable(product);
   const [customization, pricing] = configurable
     ? await Promise.all([getCustomization(), getPricing()])
     : [null, null];
