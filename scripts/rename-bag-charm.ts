@@ -12,8 +12,12 @@ const NEW_NAME = "Bag Charm";
 const client = getCliClient({ apiVersion: "2026-07-01" });
 
 async function run() {
+  // "raw" perspective so an open Studio draft is renamed too — otherwise the
+  // next publish would restore the old name over the patched published doc.
   const docs = await client.fetch<{ _id: string; name?: string }[]>(
     `*[_type == "product" && slug.current == "confetti-bag-charm"]{ _id, name }`,
+    {},
+    { perspective: "raw" },
   );
 
   if (docs.length === 0) {
