@@ -52,7 +52,7 @@ export default async function ContactPage({
             <ul className="mt-8 space-y-4 text-sm text-ink-soft">
               <li className="flex items-center gap-3">
                 <HeartIcon size={16} className="text-mauve-deep" />
-                Every piece is one-of-a-kind
+                Made to order &amp; personalized by you
               </li>
               <li className="flex items-center gap-3">
                 <GiftIcon size={16} className="text-mauve-deep" />

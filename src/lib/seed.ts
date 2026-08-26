@@ -436,28 +436,28 @@ export const SEED_FAQ: FaqItemData[] = [
     id: "seed-faq-order",
     question: "How do I order a piece?",
     answer:
-      "Every piece on the site is one-of-a-kind. When something catches your eye, tap “Inquire about this piece” and send me a note—I’ll reply with payment and shipping details within a day or two.",
+      "Pick your piece, choose your options—bead colors, initials, charms, add-ons—and tap “Request this piece.” Your request lands in my inbox with every detail, and I’ll follow up by email within a day or two to arrange payment and shipping. No payment is ever taken online.",
     category: "orders",
   },
   {
     id: "seed-faq-custom",
     question: "Do you take custom requests?",
     answer:
-      "I love making custom pieces! Send me a message through the contact page with your color ideas, the occasion, and the type of piece you’d like, and we’ll design something together.",
+      "I love making custom pieces! Bag charms and my year-round necklaces can be personalized right on their pages, and if you’re dreaming of something different altogether, send me a message through the contact page and we’ll design it together.",
     category: "orders",
   },
   {
     id: "seed-faq-shipping",
     question: "How long does shipping take?",
     answer:
-      "Ready-made pieces ship within 2–3 business days. Custom pieces usually take about a week to make before they ship. Orders over $75 ship free!",
+      "One-of-a-kind pieces that are ready to go ship within 2–3 business days. Made-to-order styles and personalized charms usually take about a week to make before they ship. Orders over $75 ship free!",
     category: "shipping",
   },
   {
     id: "seed-faq-sold",
     question: "The piece I loved is marked sold. Can you make another?",
     answer:
-      "Because every piece is hand-strung from small bead batches, exact remakes aren’t always possible—but I can almost always create something in the same spirit. Just ask!",
+      "Only one-of-a-kind premade pieces are ever marked sold—my year-round styles are made to order, so you can request those any time. If a one-off you loved is gone, exact remakes aren’t always possible (small bead batches!), but I can almost always create something in the same spirit. Just ask!",
     category: "general",
   },
   {

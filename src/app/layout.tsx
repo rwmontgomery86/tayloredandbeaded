@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s — Taylored & Beaded",
   },
   description:
-    "One-of-a-kind handmade beaded necklaces, bracelets, and bag charms. Colorful, meaningful pieces made to celebrate life's little moments.",
+    "Handmade beaded necklaces, bracelets, and customizable bag charms — made-to-order styles, one-of-a-kind pieces, and curated favorites to celebrate life's little moments.",
   openGraph: {
     siteName: "Taylored & Beaded",
     type: "website",
