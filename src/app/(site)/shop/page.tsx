@@ -80,7 +80,7 @@ export default async function ShopPage({
                       available all year.
                     </p>
                   </div>
-                  <ProductGrid products={yearRoundNecklaces} />
+                  <ProductGrid products={yearRoundNecklaces} showDescriptions />
                 </section>
               )}
 

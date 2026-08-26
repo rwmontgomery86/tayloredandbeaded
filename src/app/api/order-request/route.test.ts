@@ -190,6 +190,19 @@ describe("POST /api/order-request", () => {
     expect(sent).toHaveLength(0);
   });
 
+  it("rejects personalization that isn't name-like (e.g. URLs)", async () => {
+    mocks.getProduct.mockResolvedValue(confetti);
+    const res = await POST(
+      request({
+        ...valid,
+        slug: "confetti-bag-charm",
+        config: { beadColor: "Pink", personalization: "https://x.co" },
+      }),
+    );
+    expect(res.status).toBe(400);
+    expect(sent).toHaveLength(0);
+  });
+
   it("rejects charms that aren't in the configured options", async () => {
     mocks.getProduct.mockResolvedValue(confetti);
     const res = await POST(

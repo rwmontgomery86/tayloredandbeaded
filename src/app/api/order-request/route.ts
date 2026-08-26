@@ -111,6 +111,18 @@ export async function POST(req: Request) {
     );
   }
 
+  // Personalization is echoed into an email sent to an unverified address, so
+  // it must read like a name or initials — never a URL or other smuggled text.
+  if (
+    config.personalization &&
+    !/^[\p{L}\p{N} .'’&-]+$/u.test(config.personalization)
+  ) {
+    return NextResponse.json(
+      { ok: false, error: "Personalization can only use letters and numbers" },
+      { status: 400 },
+    );
+  }
+
   const product = await getProduct(slug);
   if (!product || product.origin === "curated") {
     return NextResponse.json(

@@ -116,6 +116,7 @@ interface SanityCard {
   colors?: { label?: string; hex?: string }[];
   featured?: boolean;
   newArrival?: boolean;
+  description?: string;
   availability?: string;
   origin?: string;
   status?: string;
@@ -140,6 +141,7 @@ function normalizeCard(p: SanityCard, pricing: PricingMap): ProductCardData {
     availability,
     origin: normalizeOrigin(p.origin),
     price: p.price ?? pricing[p.category] ?? 0,
+    description: p.description,
     image: p.image ? urlFor(p.image as never, 800) : null,
     colors: (p.colors ?? []).filter((c): c is { hex: string; label?: string } =>
       Boolean(c.hex),
@@ -282,7 +284,13 @@ export async function getCollection(
     sanityFetch<
       | (SanityCollectionCard & { intro?: string; products?: SanityCard[] })
       | null
-    >(COLLECTION_BY_SLUG_QUERY, { slug }, ["collection", `collection:${slug}`]),
+      // "product" tag included: the response embeds product cards, so product
+      // edits must invalidate collection pages too, not just product pages.
+    >(COLLECTION_BY_SLUG_QUERY, { slug }, [
+      "collection",
+      `collection:${slug}`,
+      "product",
+    ]),
     getPricing(),
   ]);
   if (c === null) {
@@ -299,13 +307,16 @@ export async function getCollection(
     description: c.description,
     intro: c.intro,
     // products[]-> yields null for broken references; drop those and any
-    // documents from retired categories before normalizing.
+    // documents from retired categories before normalizing. The Edit is
+    // curated-only by definition — a member flipped back to handmade must
+    // not appear there, whatever the collection document references.
     products: (c.products ?? [])
       .filter(
         (p): p is SanityCard =>
           Boolean(p) && CATEGORIES.some((cat) => cat.slug === p.category),
       )
-      .map((p) => normalizeCard(p, pricing)),
+      .map((p) => normalizeCard(p, pricing))
+      .filter((p) => slug !== "the-edit" || p.origin === "curated"),
   };
 }
 

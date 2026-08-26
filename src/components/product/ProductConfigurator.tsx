@@ -79,6 +79,10 @@ export default function ProductConfigurator({
     }
     setStatus("pending");
     setError(undefined);
+    // If the first captured interaction was the submit click itself (fully
+    // autofilled form), elapsed would be ~0 and the server would mistake a
+    // real shopper for a bot — omit the timing signal instead of lying.
+    const elapsedMs = startedAt.current ? Date.now() - startedAt.current : null;
     const data = Object.fromEntries(new FormData(e.currentTarget));
     try {
       const res = await fetch("/api/order-request", {
@@ -100,7 +104,7 @@ export default function ProductConfigurator({
           email: data.email,
           notes: data.notes,
           website: data.website,
-          elapsed: startedAt.current ? Date.now() - startedAt.current : 0,
+          elapsed: elapsedMs && elapsedMs > 500 ? elapsedMs : undefined,
         }),
       });
       const json = await res.json();

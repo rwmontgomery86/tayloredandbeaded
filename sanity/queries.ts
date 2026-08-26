@@ -15,6 +15,7 @@ const CARD = `{
   colors[]{ label, hex },
   featured,
   newArrival,
+  description,
   "availability": coalesce(availability, "premade"),
   "origin": coalesce(origin, "handmade"),
   status

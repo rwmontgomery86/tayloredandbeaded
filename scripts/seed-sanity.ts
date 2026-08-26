@@ -114,6 +114,12 @@ async function run() {
       newArrival: Boolean(p.newArrival),
       status: "available",
     });
+    // Documents seeded before origin/availability existed need the new fields
+    // backfilled. setIfMissing only fills absent fields, so Studio edits
+    // (photos, prices, sold status, or explicit availability) are untouched.
+    tx.patch(`product-${p.slug}`, (patch) =>
+      patch.setIfMissing({ origin: p.origin, availability: p.availability }),
+    );
   }
 
   SEED_COLLECTIONS.forEach((c, order) => {

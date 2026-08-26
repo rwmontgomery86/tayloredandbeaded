@@ -28,6 +28,8 @@ export interface ProductCardData {
   origin: ProductOrigin;
   /** Final display price (per-product override or category base). */
   price: number;
+  /** Short bead/color description, shown on year-round style cards. */
+  description?: string;
   image: string | null;
   colors: Swatch[];
   newArrival?: boolean;

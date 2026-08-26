@@ -2,7 +2,13 @@ import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import ProductCard from "./ProductCard";
 import type { ProductCardData } from "@/lib/types";
 
-export default function ProductGrid({ products }: { products: ProductCardData[] }) {
+export default function ProductGrid({
+  products,
+  showDescriptions,
+}: {
+  products: ProductCardData[];
+  showDescriptions?: boolean;
+}) {
   return (
     <Stagger
       trigger="mount"
@@ -10,7 +16,11 @@ export default function ProductGrid({ products }: { products: ProductCardData[] 
     >
       {products.map((p) => (
         <StaggerItem key={p.id}>
-          <ProductCard product={p} sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" />
+          <ProductCard
+            product={p}
+            showDescription={showDescriptions}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+          />
         </StaggerItem>
       ))}
     </Stagger>

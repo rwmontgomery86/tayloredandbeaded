@@ -8,9 +8,12 @@ import PlaceholderImage from "./PlaceholderImage";
 
 export default function ProductCard({
   product,
+  showDescription,
   sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 60vw",
 }: {
   product: ProductCardData;
+  /** Show the bead/color description line — used on the year-round grid. */
+  showDescription?: boolean;
   sizes?: string;
 }) {
   return (
@@ -51,6 +54,11 @@ export default function ProductCard({
         <h3 className="font-serif text-lg leading-snug text-ink group-hover:text-mauve-deep transition-colors">
           {product.name}
         </h3>
+        {showDescription && product.description && (
+          <p className="mt-1 text-xs leading-relaxed text-ink-soft">
+            {product.description}
+          </p>
+        )}
         <p className="mt-1 text-sm text-ink-soft">{formatPrice(product.price)}</p>
         {product.colors.length > 0 && (
           <div className="mt-2.5 flex justify-center gap-1.5" aria-hidden>
