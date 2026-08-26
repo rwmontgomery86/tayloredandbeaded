@@ -36,7 +36,9 @@ export default async function ShopPage({
           <p className="eyebrow mb-3">
             {category === "necklaces"
               ? "Made to order & one of a kind"
-              : "Hand-strung by Taylor"}
+              : category === "bag-charms"
+                ? "Made for you, bead by bead"
+                : "Hand-strung by Taylor"}
           </p>
           <h1 className="font-serif text-[clamp(2.2rem,4.5vw,3.4rem)] font-medium">
             {category === "all" ? (
@@ -47,6 +49,13 @@ export default async function ShopPage({
               categoryTitle(category)
             )}
           </h1>
+          {category === "bag-charms" && (
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ink-soft">
+              Pick your bead color, add an initial or name, and choose your
+              charms — every bag charm is customized just for you, with a
+              matching bag scarf if you&rsquo;d like one.
+            </p>
+          )}
         </div>
 
         <div className="mb-12">

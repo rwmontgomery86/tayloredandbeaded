@@ -50,7 +50,7 @@ export default async function ProductPage({
 
   const configurable =
     product.origin === "handmade" &&
-    product.category === "necklaces" &&
+    (product.category === "necklaces" || product.category === "bag-charms") &&
     !product.sold;
   const [customization, pricing] = configurable
     ? await Promise.all([getCustomization(), getPricing()])

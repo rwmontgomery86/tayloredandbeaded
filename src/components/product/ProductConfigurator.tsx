@@ -29,22 +29,38 @@ export default function ProductConfigurator({
   const [initialCharm, setInitialCharm] = useState(false);
   const [initial, setInitial] = useState("");
   const [matchingBracelet, setMatchingBracelet] = useState(false);
+  const [beadColor, setBeadColor] = useState<string>();
+  const [personalization, setPersonalization] = useState("");
+  const [charms, setCharms] = useState<string[]>([]);
+  const [bagScarf, setBagScarf] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>();
   const [startedAt] = useState(() => Date.now());
 
-  const offersBracelet = product.availability === "year-round";
+  const isBagCharm = product.category === "bag-charms";
+  const isNecklace = product.category === "necklaces";
+  const offersBracelet = isNecklace && product.availability === "year-round";
 
   const quote = useMemo(
     () =>
       calculateQuote(
         product,
-        { initialCharm, matchingBracelet: offersBracelet && matchingBracelet },
+        {
+          initialCharm: isNecklace && initialCharm,
+          matchingBracelet: offersBracelet && matchingBracelet,
+          bagScarf: isBagCharm && bagScarf,
+        },
         customization,
         pricing,
       ),
-    [product, initialCharm, matchingBracelet, offersBracelet, customization, pricing],
+    [product, isNecklace, initialCharm, matchingBracelet, offersBracelet, isBagCharm, bagScarf, customization, pricing],
   );
+
+  function toggleCharm(charm: string) {
+    setCharms((prev) =>
+      prev.includes(charm) ? prev.filter((c) => c !== charm) : [...prev, charm],
+    );
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -59,9 +75,14 @@ export default function ProductConfigurator({
         body: JSON.stringify({
           slug: product.slug,
           config: {
-            initialCharm,
-            initial: initialCharm ? initial : undefined,
+            initialCharm: isNecklace && initialCharm,
+            initial: isNecklace && initialCharm ? initial : undefined,
             matchingBracelet: offersBracelet && matchingBracelet,
+            beadColor: isBagCharm ? beadColor : undefined,
+            personalization:
+              isBagCharm && personalization ? personalization : undefined,
+            charms: isBagCharm && charms.length ? charms : undefined,
+            bagScarf: isBagCharm && bagScarf,
           },
           name: data.name,
           email: data.email,
@@ -101,53 +122,144 @@ export default function ProductConfigurator({
       <fieldset className="space-y-3">
         <legend className="eyebrow mb-3 text-[0.65rem]">Make it yours</legend>
 
-        <label className="flex cursor-pointer items-center gap-3 text-sm">
-          <input
-            type="checkbox"
-            checked={initialCharm}
-            onChange={(e) => setInitialCharm(e.target.checked)}
-            className={checkboxClasses}
-          />
-          <span>
-            Add an initial charm{" "}
-            <span className="text-ink-soft">
-              (+{formatPrice(customization.initialCharmPrice)})
-            </span>
-          </span>
-        </label>
+        {isBagCharm && (
+          <>
+            <div>
+              <p className="mb-2.5 text-sm">Bead color</p>
+              <div className="flex flex-wrap gap-2.5" role="radiogroup" aria-label="Bead color">
+                {customization.beadColors.map((color) => {
+                  const selected = beadColor === color.label;
+                  return (
+                    <button
+                      key={color.label}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      title={color.label}
+                      onClick={() => setBeadColor(color.label)}
+                      className={`h-8 w-8 rounded-full ring-2 ring-offset-2 ring-offset-cream transition-shadow ${
+                        selected ? "ring-ink" : "ring-transparent hover:ring-ink/30"
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                    >
+                      <span className="sr-only">{color.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {beadColor && (
+                <p className="mt-2 text-xs text-ink-soft">{beadColor}</p>
+              )}
+            </div>
 
-        {initialCharm && (
-          <div className="pl-7">
-            <label htmlFor="initial" className="eyebrow mb-2 block text-[0.65rem]">
-              Which initial?
+            <div>
+              <label
+                htmlFor="personalization"
+                className="mb-2 block pt-2 text-sm"
+              >
+                Initial or name{" "}
+                <span className="text-ink-soft">(optional, included)</span>
+              </label>
+              <input
+                id="personalization"
+                value={personalization}
+                onChange={(e) => setPersonalization(e.target.value)}
+                maxLength={12}
+                className={`${inputClasses} max-w-[14rem]`}
+                placeholder="MAMA, an initial…"
+              />
+            </div>
+
+            <div className="pt-2">
+              <p className="mb-2.5 text-sm">
+                Charms <span className="text-ink-soft">(pick any, included)</span>
+              </p>
+              <div className="space-y-2">
+                {customization.charmOptions.map((charm) => (
+                  <label
+                    key={charm}
+                    className="flex cursor-pointer items-center gap-3 text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={charms.includes(charm)}
+                      onChange={() => toggleCharm(charm)}
+                      className={checkboxClasses}
+                    />
+                    {charm}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <label className="flex cursor-pointer items-center gap-3 pt-2 text-sm">
+              <input
+                type="checkbox"
+                checked={bagScarf}
+                onChange={(e) => setBagScarf(e.target.checked)}
+                className={checkboxClasses}
+              />
+              <span>
+                Add a matching bag scarf{" "}
+                <span className="text-ink-soft">
+                  (+{formatPrice(customization.bagScarfPrice)})
+                </span>
+              </span>
             </label>
-            <input
-              id="initial"
-              value={initial}
-              onChange={(e) => setInitial(e.target.value)}
-              required
-              maxLength={2}
-              className={`${inputClasses} max-w-[8rem] text-center uppercase`}
-              placeholder="A"
-            />
-          </div>
+          </>
         )}
 
-        {offersBracelet && (
-          <label className="flex cursor-pointer items-center gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={matchingBracelet}
-              onChange={(e) => setMatchingBracelet(e.target.checked)}
-              className={checkboxClasses}
-            />
-            <span>
-              Add the matching bracelet{" "}
-              <span className="text-ink-soft">
-                (+{formatPrice(pricing.bracelets)})
+        {isNecklace && (
+          <>
+            <label className="flex cursor-pointer items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={initialCharm}
+                onChange={(e) => setInitialCharm(e.target.checked)}
+                className={checkboxClasses}
+              />
+              <span>
+                Add an initial charm{" "}
+                <span className="text-ink-soft">
+                  (+{formatPrice(customization.initialCharmPrice)})
+                </span>
               </span>
-            </span>
-          </label>
+            </label>
+
+            {initialCharm && (
+              <div className="pl-7">
+                <label htmlFor="initial" className="eyebrow mb-2 block text-[0.65rem]">
+                  Which initial?
+                </label>
+                <input
+                  id="initial"
+                  value={initial}
+                  onChange={(e) => setInitial(e.target.value)}
+                  required
+                  maxLength={2}
+                  className={`${inputClasses} max-w-[8rem] text-center uppercase`}
+                  placeholder="A"
+                />
+              </div>
+            )}
+
+            {offersBracelet && (
+              <label className="flex cursor-pointer items-center gap-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={matchingBracelet}
+                  onChange={(e) => setMatchingBracelet(e.target.checked)}
+                  className={checkboxClasses}
+                />
+                <span>
+                  Add the matching bracelet{" "}
+                  <span className="text-ink-soft">
+                    (+{formatPrice(pricing.bracelets)})
+                  </span>
+                </span>
+              </label>
+            )}
+          </>
         )}
       </fieldset>
 

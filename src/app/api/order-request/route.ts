@@ -13,6 +13,12 @@ const schema = z.object({
       /** The letter(s) for the initial charm; required when initialCharm is on. */
       initial: z.string().trim().min(1).max(2).optional(),
       matchingBracelet: z.boolean().optional(),
+      // Bag charm options
+      beadColor: z.string().trim().max(40).optional(),
+      /** Initial or short name strung into the charm. */
+      personalization: z.string().trim().max(12).optional(),
+      charms: z.array(z.string().trim().max(40)).max(10).optional(),
+      bagScarf: z.boolean().optional(),
     })
     .default({}),
   name: z.string().min(1).max(100),
@@ -35,6 +41,7 @@ function allowedConfiguration(
       isNecklace &&
       availability === "year-round" &&
       Boolean(config.matchingBracelet),
+    bagScarf: category === "bag-charms" && Boolean(config.bagScarf),
   };
 }
 
@@ -100,8 +107,25 @@ export async function POST(req: Request) {
         : "";
     return `- ${line.label}${detail}: ${formatPrice(line.amount)}`;
   });
+
+  // Free bag-charm choices, validated against Taylor's Studio-managed options.
+  const detailLines: string[] = [];
+  if (product.category === "bag-charms") {
+    const color = customization.beadColors.find(
+      (c) => c.label === config.beadColor,
+    );
+    if (color) detailLines.push(`- Bead color: ${color.label}`);
+    const charms = (config.charms ?? []).filter((charm) =>
+      customization.charmOptions.includes(charm),
+    );
+    if (charms.length) detailLines.push(`- Charms: ${charms.join(", ")}`);
+    if (config.personalization)
+      detailLines.push(`- Initial or name: “${config.personalization}”`);
+  }
+
   const summary = [
     ...configLines,
+    ...detailLines,
     `Total: ${formatPrice(quote.total)}`,
   ].join("\n");
 

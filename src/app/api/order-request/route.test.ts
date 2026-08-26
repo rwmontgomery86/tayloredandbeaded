@@ -139,6 +139,46 @@ describe("POST /api/order-request", () => {
     expect(sent[0].text).not.toContain("Matching bracelet");
   });
 
+  it("carries bag-charm choices into the email and prices the scarf", async () => {
+    mocks.getProduct.mockResolvedValue({
+      ...parker,
+      name: "Confetti Bag Charm",
+      slug: "confetti-bag-charm",
+      category: "bag-charms",
+      availability: "premade",
+    });
+    const res = await POST(
+      request({
+        ...valid,
+        slug: "confetti-bag-charm",
+        config: {
+          beadColor: "Seafoam Green",
+          personalization: "MAMA",
+          charms: ["MAMA", "Bow", "Not A Real Charm"],
+          bagScarf: true,
+          matchingBracelet: true, // not offered on bag charms — must be stripped
+        },
+      }),
+    );
+    expect(res.status).toBe(200);
+    const text = sent[0].text;
+    // price override 25 + $5 scarf; no bracelet, no initial charm
+    expect(text).toContain("Total: $30");
+    expect(text).toContain("Bead color: Seafoam Green");
+    expect(text).toContain("Charms: MAMA, Bow");
+    expect(text).not.toContain("Not A Real Charm");
+    expect(text).toContain("Initial or name: “MAMA”");
+    expect(text).not.toContain("Matching bracelet");
+  });
+
+  it("does not price the scarf for non-bag-charm products", async () => {
+    const res = await POST(
+      request({ ...valid, config: { bagScarf: true } }),
+    );
+    expect(res.status).toBe(200);
+    expect(sent[0].text).toContain("Total: $25");
+  });
+
   it("fails closed when email is unconfigured outside development", async () => {
     vi.stubEnv("RESEND_API_KEY", "");
     const res = await POST(request(valid));

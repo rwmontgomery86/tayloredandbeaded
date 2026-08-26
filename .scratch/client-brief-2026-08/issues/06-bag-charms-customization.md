@@ -13,16 +13,16 @@ the complete configuration.
 **Blocked by:** 05 — Necklace order request (reuses its request form, API
 route, and email composition).
 
-**Status:** ready-for-agent
+**Status:** done (2026-08-26)
 
-- [ ] Bag Charms is a clearly presented dedicated section
-- [ ] Configurator offers one bead-color choice (swatches from the
+- [x] Bag Charms is a clearly presented dedicated section
+- [x] Configurator offers one bead-color choice (swatches from the
       Customization singleton), one initial-or-name text field with the
       character cap, multi-select charms, and the bag-scarf add-on
-- [ ] Live total reflects every choice via the quote module; new quote cases
+- [x] Live total reflects every choice via the quote module; new quote cases
       (scarf, charm combinations, personalization) covered by tests
-- [ ] Submitted requests carry color, personalization text, charm selection,
+- [x] Submitted requests carry color, personalization text, charm selection,
       and scarf choice into both emails
-- [ ] Configurator is keyboard- and screen-reader-operable
-- [ ] Option values (colors, charms, prices) render from the Studio-editable
+- [x] Configurator is keyboard- and screen-reader-operable
+- [x] Option values (colors, charms, prices) render from the Studio-editable
       Customization document, not hardcoded values
