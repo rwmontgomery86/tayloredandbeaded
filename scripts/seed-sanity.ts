@@ -14,6 +14,7 @@ import {
   SEED_COLLECTIONS,
   SEED_FAQ,
   SEED_CARE_GUIDE,
+  SEED_CUSTOMIZATION,
   SEED_SETTINGS,
 } from "../src/lib/seed";
 
@@ -162,6 +163,19 @@ async function run() {
     necklaces: 25,
     bracelets: 15,
     bagCharms: 15,
+  });
+
+  tx.createOrReplace({
+    _id: "customization",
+    _type: "customization",
+    beadColors: SEED_CUSTOMIZATION.beadColors.map((color, i) => ({
+      _type: "object",
+      _key: `customization-color${i}`,
+      ...color,
+    })),
+    charmOptions: SEED_CUSTOMIZATION.charmOptions,
+    bagScarfPrice: SEED_CUSTOMIZATION.bagScarfPrice,
+    initialCharmPrice: SEED_CUSTOMIZATION.initialCharmPrice,
   });
 
   tx.createOrReplace({

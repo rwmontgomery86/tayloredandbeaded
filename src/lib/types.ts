@@ -5,6 +5,17 @@ export interface Swatch {
   hex: string;
 }
 
+export interface CustomizationColor extends Swatch {
+  label: string;
+}
+
+export interface CustomizationData {
+  beadColors: CustomizationColor[];
+  charmOptions: string[];
+  bagScarfPrice: number;
+  initialCharmPrice: number;
+}
+
 export type ProductAvailability = "year-round" | "premade";
 
 export interface ProductCardData {

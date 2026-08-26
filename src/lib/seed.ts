@@ -2,6 +2,7 @@ import type {
   CareGuideData,
   CollectionCardData,
   CollectionDetailData,
+  CustomizationData,
   FaqItemData,
   ProductCardData,
   ProductDetailData,
@@ -437,6 +438,20 @@ export const SEED_CARE_GUIDE: CareGuideData = {
       body: "Wipe beads gently with a soft, dry cloth. Skip harsh cleaners—they can damage the finish on glass and stone beads.",
     },
   ],
+};
+
+export const SEED_CUSTOMIZATION: CustomizationData = {
+  beadColors: [
+    { label: "Bright Blue", hex: "#2F7FB8" },
+    { label: "Pink", hex: "#F4A7B9" },
+    { label: "Red/Coral", hex: "#E76F61" },
+    { label: "Caramel/Brown", hex: "#A66A3F" },
+    { label: "Lavender Purple", hex: "#9B83C5" },
+    { label: "Seafoam Green", hex: "#9CCDBF" },
+  ],
+  charmOptions: ["MAMA", "Heart", "Cross", "Smiley Face", "Bow"],
+  bagScarfPrice: 5,
+  initialCharmPrice: 3,
 };
 
 export const SEED_SETTINGS: SiteSettingsData = {

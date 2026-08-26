@@ -78,6 +78,13 @@ export const CARE_GUIDE_QUERY = `*[_type == "careGuide"][0]{
 
 export const PRICING_QUERY = `*[_type == "pricing"][0]{ necklaces, bracelets, bagCharms }`;
 
+export const CUSTOMIZATION_QUERY = `*[_type == "customization"][0]{
+  beadColors[]{ label, hex },
+  charmOptions,
+  bagScarfPrice,
+  initialCharmPrice
+}`;
+
 export const SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   announcementMessages,
   instagramUrl,

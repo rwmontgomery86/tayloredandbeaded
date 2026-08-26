@@ -13,6 +13,7 @@ import {
   FAQ_QUERY,
   CARE_GUIDE_QUERY,
   PRICING_QUERY,
+  CUSTOMIZATION_QUERY,
   SETTINGS_QUERY,
 } from "../../sanity/queries";
 import { CATEGORIES, NEW_ARRIVALS_SLUG, type CategorySlug } from "./categories";
@@ -22,6 +23,7 @@ import {
   SEED_COLLECTIONS,
   SEED_FAQ,
   SEED_CARE_GUIDE,
+  SEED_CUSTOMIZATION,
   SEED_SETTINGS,
   seedProductDetail,
 } from "./seed";
@@ -29,6 +31,8 @@ import type {
   CareGuideData,
   CollectionCardData,
   CollectionDetailData,
+  CustomizationColor,
+  CustomizationData,
   FaqItemData,
   PricingMap,
   ProductAvailability,
@@ -56,6 +60,45 @@ export async function getPricing(): Promise<PricingMap> {
     necklaces: p.necklaces ?? FALLBACK_PRICING.necklaces,
     bracelets: p.bracelets ?? FALLBACK_PRICING.bracelets,
     "bag-charms": p.bagCharms ?? FALLBACK_PRICING["bag-charms"],
+  };
+}
+
+/* ---------- customization ---------- */
+
+interface SanityCustomization {
+  beadColors?: { label?: string; hex?: string }[];
+  charmOptions?: (string | null)[];
+  bagScarfPrice?: number;
+  initialCharmPrice?: number;
+}
+
+export async function getCustomization(): Promise<CustomizationData> {
+  const c = await sanityFetch<SanityCustomization | null>(
+    CUSTOMIZATION_QUERY,
+    {},
+    ["customization"],
+  );
+  if (!c) return SEED_CUSTOMIZATION;
+
+  const beadColors = (c.beadColors ?? []).filter(
+    (color): color is CustomizationColor =>
+      Boolean(color.label) && Boolean(color.hex),
+  );
+  const charmOptions = (c.charmOptions ?? []).filter(
+    (option): option is string => Boolean(option),
+  );
+
+  return {
+    beadColors: beadColors.length
+      ? beadColors
+      : SEED_CUSTOMIZATION.beadColors,
+    charmOptions: charmOptions.length
+      ? charmOptions
+      : SEED_CUSTOMIZATION.charmOptions,
+    bagScarfPrice:
+      c.bagScarfPrice ?? SEED_CUSTOMIZATION.bagScarfPrice,
+    initialCharmPrice:
+      c.initialCharmPrice ?? SEED_CUSTOMIZATION.initialCharmPrice,
   };
 }
 

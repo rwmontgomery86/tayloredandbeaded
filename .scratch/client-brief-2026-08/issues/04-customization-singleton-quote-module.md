@@ -14,16 +14,16 @@ repo's first test runner.
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** done (2026-08-26)
 
-- [ ] Customization singleton schema exists, appears in the Studio's singleton
+- [x] Customization singleton schema exists, appears in the Studio's singleton
       structure alongside Pricing, and is seeded with the brief's values
-- [ ] Data layer exposes customization options with a seeded fallback when
+- [x] Data layer exposes customization options with a seeded fallback when
       Sanity is unconfigured, consistent with existing fetches
-- [ ] The revalidation webhook tag map covers the new singleton
-- [ ] Quote module computes line items and totals as a pure function: category
+- [x] The revalidation webhook tag map covers the new singleton
+- [x] Quote module computes line items and totals as a pure function: category
       base prices, premade price overrides, initial charm, matching bracelet
       (from bracelets base price), bag scarf, and combinations
-- [ ] Vitest configured with a test script; quote module covered by
+- [x] Vitest configured with a test script; quote module covered by
       table-driven tests including missing-options fallback behavior
-- [ ] Lint and typecheck pass; tests green
+- [x] Lint and typecheck pass; tests green

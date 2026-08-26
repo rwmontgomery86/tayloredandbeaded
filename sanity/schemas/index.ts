@@ -1,5 +1,6 @@
 import product from "./product";
 import pricing from "./pricing";
+import customization from "./customization";
 import collection from "./collection";
 import faqItem from "./faqItem";
 import careGuide from "./careGuide";
@@ -10,9 +11,15 @@ export const schemaTypes = [
   collection,
   faqItem,
   pricing,
+  customization,
   careGuide,
   siteSettings,
 ];
 
 /** Document types that should exist exactly once. */
-export const singletonTypes = ["pricing", "careGuide", "siteSettings"];
+export const singletonTypes = [
+  "pricing",
+  "customization",
+  "careGuide",
+  "siteSettings",
+];

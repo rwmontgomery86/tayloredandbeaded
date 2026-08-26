@@ -42,6 +42,14 @@ export default defineConfig({
               .id("pricing")
               .child(S.document().schemaType("pricing").documentId("pricing")),
             S.listItem()
+              .title("Customization")
+              .id("customization")
+              .child(
+                S.document()
+                  .schemaType("customization")
+                  .documentId("customization"),
+              ),
+            S.listItem()
               .title("Care Guide")
               .id("careGuide")
               .child(S.document().schemaType("careGuide").documentId("careGuide")),
