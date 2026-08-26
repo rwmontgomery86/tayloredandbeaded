@@ -15,19 +15,19 @@ restating the piece and total.
 made-to-order vs premade); 04 — Customization singleton + quote module
 (prices and totals come from there).
 
-**Status:** ready-for-agent
+**Status:** done (2026-08-26)
 
-- [ ] Necklace detail pages offer initial-charm and matching-bracelet add-ons
+- [x] Necklace detail pages offer initial-charm and matching-bracelet add-ons
       with a live total computed by the quote module
-- [ ] Request form collects name, email, and optional notes; states plainly
+- [x] Request form collects name, email, and optional notes; states plainly
       that payment is arranged by email after confirmation
-- [ ] Order-request API route validates payload shape, applies the established
+- [x] Order-request API route validates payload shape, applies the established
       honeypot and minimum-elapsed-time spam guards (pretend success), and
       recomputes the total server-side — never trusting a client total
-- [ ] On success, Taylor's email carries every chosen option and the total;
+- [x] On success, Taylor's email carries every chosen option and the total;
       the shopper gets a confirmation copy; dev-mode logs instead of sending
       when email is unconfigured
-- [ ] Sold premade pieces cannot be requested
-- [ ] Route covered by tests: valid submission, invalid payload, honeypot,
+- [x] Sold premade pieces cannot be requested
+- [x] Route covered by tests: valid submission, invalid payload, honeypot,
       too-fast submission, unconfigured email, total recomputation
-- [ ] Form is keyboard- and screen-reader-operable
+- [x] Form is keyboard- and screen-reader-operable

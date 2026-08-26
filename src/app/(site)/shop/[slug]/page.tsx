@@ -9,7 +9,8 @@ import ProductCard from "@/components/product/ProductCard";
 import AvailabilityBadge from "@/components/product/AvailabilityBadge";
 import CuratedBadge from "@/components/product/CuratedBadge";
 import { HeartIcon } from "@/components/ui/icons";
-import { getProduct, getProductSlugs } from "@/lib/data";
+import ProductConfigurator from "@/components/product/ProductConfigurator";
+import { getCustomization, getPricing, getProduct, getProductSlugs } from "@/lib/data";
 import { categoryTitle } from "@/lib/categories";
 import { formatPrice } from "@/lib/utils";
 
@@ -46,6 +47,14 @@ export default async function ProductPage({
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) notFound();
+
+  const configurable =
+    product.origin === "handmade" &&
+    product.category === "necklaces" &&
+    !product.sold;
+  const [customization, pricing] = configurable
+    ? await Promise.all([getCustomization(), getPricing()])
+    : [null, null];
 
   return (
     <Section className="pt-10 md:pt-14">
@@ -136,24 +145,34 @@ export default async function ProductPage({
               </div>
             )}
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-              {product.sold ? (
-                <>
-                  <Button variant="outline" href={`/contact?piece=${product.slug}&sold=1`}>
-                    Ask about a similar piece
+            {configurable && customization && pricing ? (
+              <div className="mt-9">
+                <ProductConfigurator
+                  product={product}
+                  customization={customization}
+                  pricing={pricing}
+                />
+              </div>
+            ) : (
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+                {product.sold ? (
+                  <>
+                    <Button variant="outline" href={`/contact?piece=${product.slug}&sold=1`}>
+                      Ask about a similar piece
+                    </Button>
+                    <p className="text-xs text-ink-soft">
+                      {product.origin === "curated"
+                        ? "This one found a home, but Taylor may be able to source something similar."
+                        : "This one found a home, but Taylor can make something in the same spirit."}
+                    </p>
+                  </>
+                ) : (
+                  <Button href={`/contact?piece=${product.slug}`}>
+                    Inquire about this piece
                   </Button>
-                  <p className="text-xs text-ink-soft">
-                    {product.origin === "curated"
-                      ? "This one found a home, but Taylor may be able to source something similar."
-                      : "This one found a home, but Taylor can make something in the same spirit."}
-                  </p>
-                </>
-              ) : (
-                <Button href={`/contact?piece=${product.slug}`}>
-                  Inquire about this piece
-                </Button>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             <p className="mt-6 flex items-center gap-2 text-xs text-ink-soft">
               <HeartIcon size={12} filled className="text-mauve" />
