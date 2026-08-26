@@ -107,7 +107,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-confetti-charm",
-    name: "Confetti Bag Charm",
+    name: "Bag Charm",
     slug: "confetti-bag-charm",
     category: "bag-charms",
     origin: "handmade",
