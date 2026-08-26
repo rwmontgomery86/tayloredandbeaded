@@ -1,18 +1,15 @@
 import type { MetadataRoute } from "next";
-import { getCollectionSlugs, getProductSlugs } from "@/lib/data";
+import { getProductSlugs } from "@/lib/data";
 import { CATEGORIES, NEW_ARRIVALS_SLUG } from "@/lib/categories";
 import { SITE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, collections] = await Promise.all([
-    getProductSlugs(),
-    getCollectionSlugs(),
-  ]);
+  const products = await getProductSlugs();
 
   const staticPages = [
     "",
     "/shop",
-    "/collections",
+    "/the-edit",
     "/permanent-jewelry",
     "/about",
     "/contact",
@@ -29,10 +26,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...categoryPages,
     ...products.map((slug) => ({
       url: `${SITE_URL}/shop/${slug}`,
-      lastModified: new Date(),
-    })),
-    ...collections.map((slug) => ({
-      url: `${SITE_URL}/collections/${slug}`,
       lastModified: new Date(),
     })),
   ];

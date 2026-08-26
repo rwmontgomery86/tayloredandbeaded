@@ -141,7 +141,7 @@ describe("POST /api/order-request", () => {
 
   const confetti = {
     ...parker,
-    name: "Confetti Bag Charm",
+    name: "Bag Charm",
     slug: "confetti-bag-charm",
     category: "bag-charms" as const,
     availability: "year-round" as const,

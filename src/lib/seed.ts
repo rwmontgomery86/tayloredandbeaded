@@ -107,7 +107,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-confetti-charm",
-    name: "Confetti Bag Charm",
+    name: "Bag Charm",
     slug: "confetti-bag-charm",
     category: "bag-charms",
     origin: "handmade",
@@ -387,31 +387,10 @@ export function seedProductDetail(slug: string): ProductDetailData | null {
   return { ...p, related };
 }
 
+// The Edit is the only collection document the site still renders — the
+// mood collections were retired when the collections index folded into the
+// shop. The doc type stays for future seasonal drops.
 export const SEED_COLLECTIONS: (CollectionDetailData & CollectionCardData)[] = [
-  {
-    id: "seed-summer-brights",
-    title: "Summer Brights",
-    slug: "summer-brights",
-    image: "/products/necklace-rainbow-pastel.png",
-    description: "Sun-soaked color for long days and golden evenings.",
-    intro:
-      "The pieces in this collection were inspired by popsicles, beach umbrellas, and that first warm weekend of the year. Bright, happy color you can wear every single day.",
-    products: SEED_PRODUCTS.filter((p) =>
-      ["sorbet-skies-necklace", "cotton-candy-stack", "confetti-bag-charm"].includes(p.slug),
-    ),
-  },
-  {
-    id: "seed-golden-hour-collection",
-    title: "Golden Hour",
-    slug: "golden-hour",
-    image: "/products/necklace-warm-tones.png",
-    description: "Warm ambers, dusty pinks, and evening light.",
-    intro:
-      "Warm tones for the dreamers. These pieces pair beautifully with linen, sundresses, and a good sunset.",
-    products: SEED_PRODUCTS.filter((p) =>
-      ["golden-hour-necklace", "tidepool-necklace"].includes(p.slug),
-    ),
-  },
   {
     id: "seed-the-edit",
     title: "The Edit",

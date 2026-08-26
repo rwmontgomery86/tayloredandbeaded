@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 import { z } from "zod";
 import { getCustomization, getPricing, getProduct } from "@/lib/data";
+import {
+  getMailer,
+  isSpam,
+  jsonError,
+  parseBody,
+  sendFailure,
+  spamGuardFields,
+  unconfiguredResponse,
+} from "@/lib/email";
 import {
   availableAddOns,
   calculateQuote,
@@ -30,8 +38,7 @@ const schema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().email(),
   notes: z.string().max(1000).optional().or(z.literal("")),
-  website: z.string().optional(), // honeypot — checked in the handler, not rejected here
-  elapsed: z.number().optional(),
+  ...spamGuardFields,
 });
 
 /** Mask the request's add-ons by what the product actually offers. */
@@ -70,45 +77,31 @@ function rateLimited(req: Request): boolean {
 }
 
 export async function POST(req: Request) {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
-  }
-
-  const parsed = schema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { ok: false, error: "Please check the form and try again" },
-      { status: 400 },
-    );
-  }
-  const { slug, config, name, email, notes, website, elapsed } = parsed.data;
+  const parsed = await parseBody(
+    req,
+    schema,
+    "Please check the form and try again",
+  );
+  if (parsed.response) return parsed.response;
+  const { slug, config, name, email, notes } = parsed.data;
 
   if (rateLimited(req)) {
-    return NextResponse.json(
-      { ok: false, error: "Too many requests — please try again later" },
-      { status: 429 },
-    );
+    return jsonError("Too many requests — please try again later", 429);
   }
 
   // Spam guards: filled honeypot or superhuman submit speed → pretend success.
   // Log the drop so a false positive is at least visible server-side.
-  if (website || (typeof elapsed === "number" && elapsed < 1500)) {
+  if (isSpam(parsed.data, 1500)) {
     console.warn("[order-request] spam guard dropped a submission", {
       slug,
-      honeypot: Boolean(website),
-      elapsed,
+      honeypot: Boolean(parsed.data.website),
+      elapsed: parsed.data.elapsed,
     });
     return NextResponse.json({ ok: true });
   }
 
   if (config.initialCharm && !config.initial) {
-    return NextResponse.json(
-      { ok: false, error: "Please tell us which initial you'd like" },
-      { status: 400 },
-    );
+    return jsonError("Please tell us which initial you'd like", 400);
   }
 
   // Personalization is echoed into an email sent to an unverified address, so
@@ -117,24 +110,15 @@ export async function POST(req: Request) {
     config.personalization &&
     !/^[\p{L}\p{N} .'’&-]+$/u.test(config.personalization)
   ) {
-    return NextResponse.json(
-      { ok: false, error: "Personalization can only use letters and numbers" },
-      { status: 400 },
-    );
+    return jsonError("Personalization can only use letters and numbers", 400);
   }
 
   const product = await getProduct(slug);
   if (!product || product.origin === "curated") {
-    return NextResponse.json(
-      { ok: false, error: "This piece can't be requested online" },
-      { status: 404 },
-    );
+    return jsonError("This piece can't be requested online", 404);
   }
   if (product.sold) {
-    return NextResponse.json(
-      { ok: false, error: "This piece has already found a home" },
-      { status: 409 },
-    );
+    return jsonError("This piece has already found a home", 409);
   }
 
   const [customization, pricing] = await Promise.all([
@@ -151,20 +135,13 @@ export async function POST(req: Request) {
       (c) => c.label === config.beadColor,
     );
     if (!color) {
-      return NextResponse.json(
-        { ok: false, error: "Please pick a bead color" },
-        { status: 400 },
-      );
+      return jsonError("Please pick a bead color", 400);
     }
     const charms = config.charms ?? [];
     if (charms.some((charm) => !customization.charmOptions.includes(charm))) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error:
-            "The charm options changed — please refresh the page and pick again",
-        },
-        { status: 400 },
+      return jsonError(
+        "The charm options changed — please refresh the page and pick again",
+        400,
       );
     }
     detailLines.push(`- Bead color: ${color.label}`);
@@ -191,29 +168,15 @@ export async function POST(req: Request) {
     `Total: ${formatPrice(quote.total)}`,
   ].join("\n");
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
-  if (!apiKey || !to) {
-    if (process.env.NODE_ENV === "development") {
-      console.log("[order-request] (no Resend config, logging only)", {
-        name,
-        email,
-        slug,
-        summary,
-        notes,
-      });
-      return NextResponse.json({ ok: true });
-    }
-    return NextResponse.json(
-      { ok: false, error: "Requests are temporarily unavailable" },
-      { status: 503 },
+  const mailer = getMailer();
+  if (!mailer) {
+    return unconfiguredResponse(
+      "order-request",
+      "Requests are temporarily unavailable",
+      { name, email, slug, summary, notes },
     );
   }
-
-  const resend = new Resend(apiKey);
-  const from =
-    process.env.CONTACT_FROM_EMAIL ??
-    "Taylored & Beaded <onboarding@resend.dev>";
+  const { resend, from, to } = mailer;
 
   const { error } = await resend.emails.send({
     from,
@@ -223,11 +186,7 @@ export async function POST(req: Request) {
     text: `From: ${name} <${email}>\n\n${summary}\n${notes ? `\nNotes:\n${notes}\n` : ""}\nReply to this email to confirm the order and arrange payment.`,
   });
   if (error) {
-    console.error("[order-request] Resend error:", error);
-    return NextResponse.json(
-      { ok: false, error: "Could not send your request" },
-      { status: 502 },
-    );
+    return sendFailure("order-request", error, "Could not send your request");
   }
 
   // Confirmation copy to the shopper. Taylor already has the request, so a
