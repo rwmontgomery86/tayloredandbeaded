@@ -45,7 +45,6 @@ const FALLBACK_PRICING: PricingMap = Object.fromEntries(
 interface SanityPricing {
   necklaces?: number;
   bracelets?: number;
-  anklets?: number;
   bagCharms?: number;
 }
 
@@ -55,7 +54,6 @@ export async function getPricing(): Promise<PricingMap> {
   return {
     necklaces: p.necklaces ?? FALLBACK_PRICING.necklaces,
     bracelets: p.bracelets ?? FALLBACK_PRICING.bracelets,
-    anklets: p.anklets ?? FALLBACK_PRICING.anklets,
     "bag-charms": p.bagCharms ?? FALLBACK_PRICING["bag-charms"],
   };
 }

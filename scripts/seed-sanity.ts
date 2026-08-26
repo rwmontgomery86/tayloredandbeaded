@@ -155,7 +155,6 @@ async function run() {
     _type: "pricing",
     necklaces: 25,
     bracelets: 15,
-    anklets: 15,
     bagCharms: 15,
   });
 

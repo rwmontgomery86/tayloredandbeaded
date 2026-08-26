@@ -97,19 +97,6 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     ],
   },
   {
-    id: "seed-seashore",
-    name: "Seashore Anklet",
-    slug: "seashore-anklet",
-    category: "anklets",
-    price: 15,
-    image: "/products/anklet-coral-gold.png",
-    images: ["/products/anklet-coral-gold.png"],
-    description:
-      "Coral, turquoise, and gold rondelles on a dainty strand made for sandy toes and sunshine. Sized to order.",
-    materials: ["Stone rondelles", "Gold-tone spacers", "Durable stringing wire"],
-    colors: [{ hex: "#e8836b" }, { hex: "#5bbdb4" }, { hex: "#d9a441" }],
-  },
-  {
     id: "seed-confetti-charm",
     name: "Confetti Bag Charm",
     slug: "confetti-bag-charm",
@@ -129,7 +116,6 @@ export const SEED_FEATURED_SLUGS = [
   "tidepool-necklace",
   "sorbet-skies-necklace",
   "cotton-candy-stack",
-  "seashore-anklet",
   "confetti-bag-charm",
 ];
 
@@ -152,7 +138,7 @@ export const SEED_COLLECTIONS: (CollectionDetailData & CollectionCardData)[] = [
     intro:
       "The pieces in this collection were inspired by popsicles, beach umbrellas, and that first warm weekend of the year. Bright, happy color you can wear every single day.",
     products: SEED_PRODUCTS.filter((p) =>
-      ["sorbet-skies-necklace", "cotton-candy-stack", "seashore-anklet", "confetti-bag-charm"].includes(p.slug),
+      ["sorbet-skies-necklace", "cotton-candy-stack", "confetti-bag-charm"].includes(p.slug),
     ),
   },
   {

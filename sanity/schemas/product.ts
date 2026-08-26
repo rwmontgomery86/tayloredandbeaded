@@ -26,7 +26,6 @@ export default defineType({
         list: [
           { title: "Necklaces", value: "necklaces" },
           { title: "Bracelets", value: "bracelets" },
-          { title: "Anklets", value: "anklets" },
           { title: "Bag Charms", value: "bag-charms" },
         ],
         layout: "radio",

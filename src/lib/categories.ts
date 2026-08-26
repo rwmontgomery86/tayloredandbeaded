@@ -1,4 +1,4 @@
-export type CategorySlug = "necklaces" | "bracelets" | "anklets" | "bag-charms";
+export type CategorySlug = "necklaces" | "bracelets" | "bag-charms";
 
 export interface Category {
   slug: CategorySlug;
@@ -20,12 +20,6 @@ export const CATEGORIES: Category[] = [
     title: "Bracelets",
     basePrice: 15,
     image: "/products/bracelet-pastel-stack.png",
-  },
-  {
-    slug: "anklets",
-    title: "Anklets",
-    basePrice: 15,
-    image: "/products/anklet-coral-gold.png",
   },
   {
     slug: "bag-charms",

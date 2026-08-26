@@ -10,12 +10,12 @@ site but recoverable if she ever brings them back.
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** done (2026-08-26)
 
-- [ ] Anklets removed from the category constants, navigation, and every
+- [x] Anklets removed from the category constants, navigation, and every
       category-driven surface (shop pages, homepage tiles, footers, filters)
-- [ ] Anklets removed from the pricing schema/singleton UI and from seed data
-- [ ] The old anklets category URL issues a permanent redirect to the shop
-- [ ] Existing anklet product documents in Sanity are unpublished, not deleted
+- [x] Anklets removed from the pricing schema/singleton UI and from seed data
+- [x] The old anklets category URL issues a permanent redirect to the shop
+- [x] Existing anklet product documents in Sanity are unpublished, not deleted
       (via script or documented manual step)
-- [ ] Lint and typecheck (build) pass; no dangling anklet references remain
+- [x] Lint and typecheck (build) pass; no dangling anklet references remain

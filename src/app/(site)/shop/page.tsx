@@ -9,7 +9,7 @@ import { categoryTitle, NEW_ARRIVALS_SLUG, CATEGORIES } from "@/lib/categories";
 export const metadata: Metadata = {
   title: "Shop",
   description:
-    "Browse one-of-a-kind handmade beaded necklaces, bracelets, anklets, and bag charms.",
+    "Browse one-of-a-kind handmade beaded necklaces, bracelets, and bag charms.",
 };
 
 const VALID = new Set(["all", NEW_ARRIVALS_SLUG, ...CATEGORIES.map((c) => c.slug)]);
