@@ -8,9 +8,7 @@ import {
   FEATURED_PRODUCTS_QUERY,
   PRODUCT_BY_SLUG_QUERY,
   PRODUCT_SLUGS_QUERY,
-  COLLECTIONS_QUERY,
   COLLECTION_BY_SLUG_QUERY,
-  COLLECTION_SLUGS_QUERY,
   FAQ_QUERY,
   CARE_GUIDE_QUERY,
   PRICING_QUERY,
@@ -30,7 +28,6 @@ import {
 } from "./seed";
 import type {
   CareGuideData,
-  CollectionCardData,
   CollectionDetailData,
   CustomizationColor,
   CustomizationData,
@@ -261,22 +258,6 @@ interface SanityCollectionCard {
   description?: string;
 }
 
-export async function getCollections(): Promise<CollectionCardData[]> {
-  const cols = await sanityFetch<SanityCollectionCard[]>(
-    COLLECTIONS_QUERY,
-    {},
-    ["collection"],
-  );
-  if (cols === null) return sanityConfigured ? [] : SEED_COLLECTIONS;
-  return cols.map((c) => ({
-    id: c._id,
-    title: c.title,
-    slug: c.slug,
-    image: c.coverImage ? urlFor(c.coverImage as never, 1200) : null,
-    description: c.description,
-  }));
-}
-
 export async function getCollection(
   slug: string,
 ): Promise<CollectionDetailData | null> {
@@ -318,14 +299,6 @@ export async function getCollection(
       .map((p) => normalizeCard(p, pricing))
       .filter((p) => slug !== "the-edit" || p.origin === "curated"),
   };
-}
-
-export async function getCollectionSlugs(): Promise<string[]> {
-  const slugs = await sanityFetch<string[]>(COLLECTION_SLUGS_QUERY, {}, [
-    "collection",
-  ]);
-  if (slugs !== null) return slugs;
-  return sanityConfigured ? [] : SEED_COLLECTIONS.map((c) => c.slug);
 }
 
 /* ---------- info content ---------- */

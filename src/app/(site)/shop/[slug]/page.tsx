@@ -65,7 +65,7 @@ export default async function ProductPage({
           <Link
             href={
               product.origin === "curated"
-                ? "/collections/the-edit"
+                ? "/the-edit"
                 : `/shop?category=${product.category}`
             }
             className="link-underline"

@@ -1,50 +1,28 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import Section, { Container } from "@/components/ui/Section";
 import Reveal from "@/components/motion/Reveal";
 import ProductGrid from "@/components/product/ProductGrid";
-import { getCollection, getCollectionSlugs } from "@/lib/data";
+import { getCollection } from "@/lib/data";
 
-export const dynamicParams = true;
+// The Edit is the one curated (not handmade) grouping, so it gets its own
+// page instead of living under a general collections index.
+const SLUG = "the-edit";
 
-export async function generateStaticParams() {
-  const slugs = await getCollectionSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const collection = await getCollection(slug);
-  if (!collection) return { title: "Collection not found" };
+export async function generateMetadata(): Promise<Metadata> {
+  const collection = await getCollection(SLUG);
+  if (!collection) return { title: "The Edit" };
   return { title: collection.title, description: collection.description };
 }
 
-export default async function CollectionPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const collection = await getCollection(slug);
+export default async function TheEditPage() {
+  const collection = await getCollection(SLUG);
   if (!collection) notFound();
 
   return (
     <Section className="pt-12 md:pt-16">
       <Container>
-        <nav aria-label="Breadcrumb" className="mb-8 text-[0.68rem] tracking-[0.16em] uppercase text-ink-soft">
-          <Link href="/collections" className="link-underline">
-            Collections
-          </Link>
-          <span className="mx-2">/</span>
-          {collection.title}
-        </nav>
-
         <Reveal>
           <div className="grid items-center gap-8 md:grid-cols-[1.1fr_1fr] md:gap-14">
             {collection.image && (
@@ -60,7 +38,7 @@ export default async function CollectionPage({
               </div>
             )}
             <div>
-              <p className="eyebrow mb-3">A curated collection</p>
+              <p className="eyebrow mb-3">Personally selected by Taylor</p>
               <h1 className="font-serif text-[clamp(2.2rem,4.5vw,3.4rem)] font-medium leading-tight">
                 {collection.title}
               </h1>
@@ -78,7 +56,7 @@ export default async function CollectionPage({
             <ProductGrid products={collection.products} />
           ) : (
             <p className="py-10 text-center text-ink-soft">
-              Pieces for this collection are coming soon.
+              Pieces for The Edit are coming soon.
             </p>
           )}
         </div>

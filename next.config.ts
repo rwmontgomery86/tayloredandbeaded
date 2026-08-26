@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
         destination: "/shop?category=all",
         permanent: true,
       },
+      // The Edit moved to its own top-level page; the general collections
+      // index was retired in favor of the shop.
+      {
+        source: "/collections/the-edit",
+        destination: "/the-edit",
+        permanent: true,
+      },
+      {
+        source: "/collections/:slug*",
+        destination: "/shop",
+        permanent: true,
+      },
     ];
   },
   images: {

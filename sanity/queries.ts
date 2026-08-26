@@ -48,14 +48,6 @@ export const PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $s
 
 export const PRODUCT_SLUGS_QUERY = `*[_type == "product" && defined(slug.current) && ${PRODUCT_CATEGORY_FILTER}].slug.current`;
 
-export const COLLECTIONS_QUERY = `*[_type == "collection" && defined(slug.current)] | order(order asc, _createdAt desc){
-  _id,
-  title,
-  "slug": slug.current,
-  coverImage,
-  description
-}`;
-
 export const COLLECTION_BY_SLUG_QUERY = `*[_type == "collection" && slug.current == $slug][0]{
   _id,
   title,
@@ -65,8 +57,6 @@ export const COLLECTION_BY_SLUG_QUERY = `*[_type == "collection" && slug.current
   "intro": pt::text(intro),
   "products": products[]-> ${CARD}
 }`;
-
-export const COLLECTION_SLUGS_QUERY = `*[_type == "collection" && defined(slug.current)].slug.current`;
 
 export const FAQ_QUERY = `*[_type == "faqItem"] | order(order asc, _createdAt asc){
   _id,
