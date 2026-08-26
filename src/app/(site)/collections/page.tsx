@@ -10,7 +10,7 @@ import { getCollections } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Collections",
   description:
-    "Curated collections of one-of-a-kind handmade beaded jewelry by Taylored & Beaded.",
+    "Explore handmade and personally selected jewelry collections from Taylored & Beaded.",
 };
 
 export default async function CollectionsPage() {

@@ -14,6 +14,7 @@ const COMPANY_LINKS = [
   { href: "/about", label: "About Taylor" },
   { href: "/permanent-jewelry", label: "Permanent Jewelry" },
   { href: "/collections", label: "Collections" },
+  { href: "/collections/the-edit", label: "The Edit" },
   { href: "/shop?category=new-arrivals", label: "New Arrivals" },
 ];
 
@@ -30,8 +31,8 @@ export default function Footer({ instagramUrl }: { instagramUrl: string }) {
               height={72}
             />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-soft">
-              One-of-a-kind beaded pieces, hand-strung with love in small
-              batches. Here&rsquo;s to turning setbacks into something
+              Beaded pieces hand-strung with love, made to order just for
+              you. Here&rsquo;s to turning setbacks into something
               beautiful.
             </p>
           </div>

@@ -72,7 +72,7 @@ export default function HeroFullBleed() {
             className="mx-auto mt-3 max-w-[17rem] text-sm leading-relaxed text-ink-soft md:mx-0 md:mt-6 md:max-w-md md:text-[0.95rem]"
             {...rise(0.28)}
           >
-            One-of-a-kind beaded pieces, where the beauty is in the
+            Beaded pieces made just for you, where the beauty is in the
             details.
           </motion.p>
           <motion.div

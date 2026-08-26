@@ -2,13 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import type { ProductCardData } from "@/lib/types";
+import AvailabilityBadge from "./AvailabilityBadge";
+import CuratedBadge from "./CuratedBadge";
 import PlaceholderImage from "./PlaceholderImage";
 
 export default function ProductCard({
   product,
+  showDescription,
   sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 60vw",
 }: {
   product: ProductCardData;
+  /** Show the bead/color description line — used on the year-round grid. */
+  showDescription?: boolean;
   sizes?: string;
 }) {
   return (
@@ -27,21 +32,33 @@ export default function ProductCard({
             <PlaceholderImage />
           )}
         </div>
-        {product.sold && (
-          <span className="absolute top-3 left-3 rounded-full bg-cream/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
-            Sold
-          </span>
-        )}
-        {!product.sold && product.newArrival && (
-          <span className="absolute top-3 left-3 rounded-full bg-blush/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink">
-            New
-          </span>
-        )}
+        <div className="absolute top-3 left-3 flex flex-col items-start gap-2">
+          {product.origin === "curated" ? (
+            <CuratedBadge />
+          ) : (
+            <AvailabilityBadge availability={product.availability} />
+          )}
+          {product.sold && (
+            <span className="rounded-full bg-cream/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink-soft">
+              Sold
+            </span>
+          )}
+          {!product.sold && product.newArrival && (
+            <span className="rounded-full bg-blush/90 px-3 py-1 text-[0.62rem] tracking-[0.15em] uppercase text-ink">
+              New
+            </span>
+          )}
+        </div>
       </div>
       <div className="mt-4 text-center">
         <h3 className="font-serif text-lg leading-snug text-ink group-hover:text-mauve-deep transition-colors">
           {product.name}
         </h3>
+        {showDescription && product.description && (
+          <p className="mt-1 text-xs leading-relaxed text-ink-soft">
+            {product.description}
+          </p>
+        )}
         <p className="mt-1 text-sm text-ink-soft">{formatPrice(product.price)}</p>
         {product.colors.length > 0 && (
           <div className="mt-2.5 flex justify-center gap-1.5" aria-hidden>

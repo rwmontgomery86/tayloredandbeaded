@@ -5,13 +5,31 @@ export interface Swatch {
   hex: string;
 }
 
+export interface CustomizationColor extends Swatch {
+  label: string;
+}
+
+export interface CustomizationData {
+  beadColors: CustomizationColor[];
+  charmOptions: string[];
+  bagScarfPrice: number;
+  initialCharmPrice: number;
+}
+
+export type ProductAvailability = "year-round" | "premade";
+export type ProductOrigin = "handmade" | "curated";
+
 export interface ProductCardData {
   id: string;
   name: string;
   slug: string;
   category: CategorySlug;
+  availability: ProductAvailability;
+  origin: ProductOrigin;
   /** Final display price (per-product override or category base). */
   price: number;
+  /** Short bead/color description, shown on year-round style cards. */
+  description?: string;
   image: string | null;
   colors: Swatch[];
   newArrival?: boolean;

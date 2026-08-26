@@ -1,3 +1,4 @@
+import { sanityConfigured } from "../../sanity/env";
 import { sanityFetch } from "../../sanity/lib/fetch";
 import { urlFor } from "../../sanity/lib/image";
 import {
@@ -13,6 +14,7 @@ import {
   FAQ_QUERY,
   CARE_GUIDE_QUERY,
   PRICING_QUERY,
+  CUSTOMIZATION_QUERY,
   SETTINGS_QUERY,
 } from "../../sanity/queries";
 import { CATEGORIES, NEW_ARRIVALS_SLUG, type CategorySlug } from "./categories";
@@ -22,6 +24,7 @@ import {
   SEED_COLLECTIONS,
   SEED_FAQ,
   SEED_CARE_GUIDE,
+  SEED_CUSTOMIZATION,
   SEED_SETTINGS,
   seedProductDetail,
 } from "./seed";
@@ -29,10 +32,14 @@ import type {
   CareGuideData,
   CollectionCardData,
   CollectionDetailData,
+  CustomizationColor,
+  CustomizationData,
   FaqItemData,
   PricingMap,
+  ProductAvailability,
   ProductCardData,
   ProductDetailData,
+  ProductOrigin,
   SiteSettingsData,
 } from "./types";
 
@@ -45,7 +52,6 @@ const FALLBACK_PRICING: PricingMap = Object.fromEntries(
 interface SanityPricing {
   necklaces?: number;
   bracelets?: number;
-  anklets?: number;
   bagCharms?: number;
 }
 
@@ -55,8 +61,46 @@ export async function getPricing(): Promise<PricingMap> {
   return {
     necklaces: p.necklaces ?? FALLBACK_PRICING.necklaces,
     bracelets: p.bracelets ?? FALLBACK_PRICING.bracelets,
-    anklets: p.anklets ?? FALLBACK_PRICING.anklets,
     "bag-charms": p.bagCharms ?? FALLBACK_PRICING["bag-charms"],
+  };
+}
+
+/* ---------- customization ---------- */
+
+interface SanityCustomization {
+  beadColors?: { label?: string; hex?: string }[];
+  charmOptions?: (string | null)[];
+  bagScarfPrice?: number;
+  initialCharmPrice?: number;
+}
+
+export async function getCustomization(): Promise<CustomizationData> {
+  const c = await sanityFetch<SanityCustomization | null>(
+    CUSTOMIZATION_QUERY,
+    {},
+    ["customization"],
+  );
+  if (!c) return SEED_CUSTOMIZATION;
+
+  const beadColors = (c.beadColors ?? []).filter(
+    (color): color is CustomizationColor =>
+      Boolean(color.label) && Boolean(color.hex),
+  );
+  const charmOptions = (c.charmOptions ?? []).filter(
+    (option): option is string => Boolean(option),
+  );
+
+  return {
+    beadColors: beadColors.length
+      ? beadColors
+      : SEED_CUSTOMIZATION.beadColors,
+    charmOptions: charmOptions.length
+      ? charmOptions
+      : SEED_CUSTOMIZATION.charmOptions,
+    bagScarfPrice:
+      c.bagScarfPrice ?? SEED_CUSTOMIZATION.bagScarfPrice,
+    initialCharmPrice:
+      c.initialCharmPrice ?? SEED_CUSTOMIZATION.initialCharmPrice,
   };
 }
 
@@ -72,22 +116,38 @@ interface SanityCard {
   colors?: { label?: string; hex?: string }[];
   featured?: boolean;
   newArrival?: boolean;
+  description?: string;
+  availability?: string;
+  origin?: string;
   status?: string;
 }
 
+function normalizeAvailability(value?: string): ProductAvailability {
+  return value === "year-round" ? "year-round" : "premade";
+}
+
+function normalizeOrigin(value?: string): ProductOrigin {
+  return value === "curated" ? "curated" : "handmade";
+}
+
 function normalizeCard(p: SanityCard, pricing: PricingMap): ProductCardData {
+  const availability = normalizeAvailability(p.availability);
+
   return {
     id: p._id,
     name: p.name,
     slug: p.slug,
     category: p.category,
+    availability,
+    origin: normalizeOrigin(p.origin),
     price: p.price ?? pricing[p.category] ?? 0,
+    description: p.description,
     image: p.image ? urlFor(p.image as never, 800) : null,
     colors: (p.colors ?? []).filter((c): c is { hex: string; label?: string } =>
       Boolean(c.hex),
     ),
     newArrival: p.newArrival,
-    sold: p.status === "sold",
+    sold: availability === "premade" && p.status === "sold",
   };
 }
 
@@ -108,12 +168,14 @@ export async function getProducts(
     getPricing(),
   ]);
   if (cards === null) {
+    if (sanityConfigured) return []; // fetch error: honest empty beats phantoms
     return SEED_PRODUCTS.filter((p) =>
-      !category || category === "all"
+      p.origin === "handmade" &&
+      (!category || category === "all"
         ? true
         : category === NEW_ARRIVALS_SLUG
           ? p.newArrival
-          : p.category === category,
+          : p.category === category),
     );
   }
   return cards.map((c) => normalizeCard(c, pricing));
@@ -125,7 +187,11 @@ export async function getFeaturedProducts(): Promise<ProductCardData[]> {
     getPricing(),
   ]);
   if (cards === null) {
-    return SEED_PRODUCTS.filter((p) => SEED_FEATURED_SLUGS.includes(p.slug));
+    if (sanityConfigured) return [];
+    return SEED_PRODUCTS.filter(
+      (p) =>
+        p.origin === "handmade" && SEED_FEATURED_SLUGS.includes(p.slug),
+    );
   }
   return cards.map((c) => normalizeCard(c, pricing));
 }
@@ -148,14 +214,20 @@ export async function getProduct(
     getPricing(),
   ]);
   if (p === null) {
-    // Sanity unconfigured (fall back to seed) or genuinely not found
-    return seedProductDetail(slug);
+    // Seed data only stands in while Sanity is unconfigured. With a live
+    // dataset, a missing/unpublished document is genuinely gone — serving the
+    // seed version would resurrect retired pieces as orderable phantoms.
+    return sanityConfigured ? null : seedProductDetail(slug);
   }
+  const availability = normalizeAvailability(p.availability);
+
   return {
     id: p._id,
     name: p.name,
     slug: p.slug,
     category: p.category,
+    availability,
+    origin: normalizeOrigin(p.origin),
     price: p.price ?? pricing[p.category] ?? 0,
     images: (p.images ?? [])
       .map((i) => urlFor(i as never, 1600))
@@ -166,7 +238,7 @@ export async function getProduct(
       Boolean(c.hex),
     ),
     newArrival: p.newArrival,
-    sold: p.status === "sold",
+    sold: availability === "premade" && p.status === "sold",
     related: (p.related ?? []).map((r) => normalizeCard(r, pricing)),
   };
 }
@@ -175,7 +247,8 @@ export async function getProductSlugs(): Promise<string[]> {
   const slugs = await sanityFetch<string[]>(PRODUCT_SLUGS_QUERY, {}, [
     "product",
   ]);
-  return slugs ?? SEED_PRODUCTS.map((p) => p.slug);
+  if (slugs !== null) return slugs;
+  return sanityConfigured ? [] : SEED_PRODUCTS.map((p) => p.slug);
 }
 
 /* ---------- collections ---------- */
@@ -194,7 +267,7 @@ export async function getCollections(): Promise<CollectionCardData[]> {
     {},
     ["collection"],
   );
-  if (cols === null) return SEED_COLLECTIONS;
+  if (cols === null) return sanityConfigured ? [] : SEED_COLLECTIONS;
   return cols.map((c) => ({
     id: c._id,
     title: c.title,
@@ -211,11 +284,20 @@ export async function getCollection(
     sanityFetch<
       | (SanityCollectionCard & { intro?: string; products?: SanityCard[] })
       | null
-    >(COLLECTION_BY_SLUG_QUERY, { slug }, ["collection", `collection:${slug}`]),
+      // "product" tag included: the response embeds product cards, so product
+      // edits must invalidate collection pages too, not just product pages.
+    >(COLLECTION_BY_SLUG_QUERY, { slug }, [
+      "collection",
+      `collection:${slug}`,
+      "product",
+    ]),
     getPricing(),
   ]);
   if (c === null) {
-    return SEED_COLLECTIONS.find((s) => s.slug === slug) ?? null;
+    // Same rule as getProduct: seed only stands in while Sanity is unconfigured.
+    return sanityConfigured
+      ? null
+      : (SEED_COLLECTIONS.find((s) => s.slug === slug) ?? null);
   }
   return {
     id: c._id,
@@ -224,7 +306,17 @@ export async function getCollection(
     image: c.coverImage ? urlFor(c.coverImage as never, 1600) : null,
     description: c.description,
     intro: c.intro,
-    products: (c.products ?? []).map((p) => normalizeCard(p, pricing)),
+    // products[]-> yields null for broken references; drop those and any
+    // documents from retired categories before normalizing. The Edit is
+    // curated-only by definition — a member flipped back to handmade must
+    // not appear there, whatever the collection document references.
+    products: (c.products ?? [])
+      .filter(
+        (p): p is SanityCard =>
+          Boolean(p) && CATEGORIES.some((cat) => cat.slug === p.category),
+      )
+      .map((p) => normalizeCard(p, pricing))
+      .filter((p) => slug !== "the-edit" || p.origin === "curated"),
   };
 }
 
@@ -232,7 +324,8 @@ export async function getCollectionSlugs(): Promise<string[]> {
   const slugs = await sanityFetch<string[]>(COLLECTION_SLUGS_QUERY, {}, [
     "collection",
   ]);
-  return slugs ?? SEED_COLLECTIONS.map((c) => c.slug);
+  if (slugs !== null) return slugs;
+  return sanityConfigured ? [] : SEED_COLLECTIONS.map((c) => c.slug);
 }
 
 /* ---------- info content ---------- */

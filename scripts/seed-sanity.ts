@@ -1,7 +1,9 @@
 /**
  * One-time migration of the built-in seed content into Sanity, so the CMS
- * starts populated instead of empty. Idempotent: deterministic _ids, so
- * re-running updates rather than duplicates.
+ * starts populated instead of empty. Idempotent AND non-destructive:
+ * deterministic _ids with createIfNotExists, so re-running creates only
+ * documents that don't exist yet and never touches Studio edits (photos,
+ * prices, sold status stay exactly as Taylor left them).
  *
  * Run with:  npx sanity exec scripts/seed-sanity.ts --with-user-token
  */
@@ -10,9 +12,11 @@ import path from "node:path";
 import { getCliClient } from "sanity/cli";
 import {
   SEED_PRODUCTS,
+  SEED_FEATURED_SLUGS,
   SEED_COLLECTIONS,
   SEED_FAQ,
   SEED_CARE_GUIDE,
+  SEED_CUSTOMIZATION,
   SEED_SETTINGS,
 } from "../src/lib/seed";
 
@@ -82,16 +86,22 @@ async function run() {
   const tx = client.transaction();
 
   for (const p of SEED_PRODUCTS) {
-    tx.createOrReplace({
+    tx.createIfNotExists({
       _id: `product-${p.slug}`,
       _type: "product",
       name: p.name,
       slug: { _type: "slug", current: p.slug },
       category: p.category,
+      origin: p.origin,
+      availability: p.availability,
       // No price override: seed prices all match the category pricing below.
-      images: p.images.map((img, i) =>
-        imageRef(assets.get(img)!, `${p.slug}-img${i}`),
-      ),
+      ...(p.images.length > 0
+        ? {
+            images: p.images.map((img, i) =>
+              imageRef(assets.get(img)!, `${p.slug}-img${i}`),
+            ),
+          }
+        : {}),
       description: p.description,
       materials: p.materials,
       colors: p.colors?.map((c, i) => ({
@@ -100,14 +110,20 @@ async function run() {
         ...(("label" in c && c.label) ? { label: c.label } : {}),
         hex: c.hex,
       })),
-      featured: true,
+      featured: SEED_FEATURED_SLUGS.includes(p.slug),
       newArrival: Boolean(p.newArrival),
       status: "available",
     });
+    // Documents seeded before origin/availability existed need the new fields
+    // backfilled. setIfMissing only fills absent fields, so Studio edits
+    // (photos, prices, sold status, or explicit availability) are untouched.
+    tx.patch(`product-${p.slug}`, (patch) =>
+      patch.setIfMissing({ origin: p.origin, availability: p.availability }),
+    );
   }
 
   SEED_COLLECTIONS.forEach((c, order) => {
-    tx.createOrReplace({
+    tx.createIfNotExists({
       _id: `collection-${c.slug}`,
       _type: "collection",
       title: c.title,
@@ -126,7 +142,7 @@ async function run() {
 
   SEED_FAQ.forEach((f, order) => {
     const key = f.id.replace(/^seed-/, "");
-    tx.createOrReplace({
+    tx.createIfNotExists({
       _id: key,
       _type: "faqItem",
       question: f.question,
@@ -137,7 +153,7 @@ async function run() {
   });
 
   // Singleton _ids must match the documentIds pinned in sanity.config.ts.
-  tx.createOrReplace({
+  tx.createIfNotExists({
     _id: "careGuide",
     _type: "careGuide",
     title: SEED_CARE_GUIDE.title,
@@ -150,16 +166,28 @@ async function run() {
     })),
   });
 
-  tx.createOrReplace({
+  tx.createIfNotExists({
     _id: "pricing",
     _type: "pricing",
     necklaces: 25,
     bracelets: 15,
-    anklets: 15,
     bagCharms: 15,
   });
 
-  tx.createOrReplace({
+  tx.createIfNotExists({
+    _id: "customization",
+    _type: "customization",
+    beadColors: SEED_CUSTOMIZATION.beadColors.map((color, i) => ({
+      _type: "object",
+      _key: `customization-color${i}`,
+      ...color,
+    })),
+    charmOptions: SEED_CUSTOMIZATION.charmOptions,
+    bagScarfPrice: SEED_CUSTOMIZATION.bagScarfPrice,
+    initialCharmPrice: SEED_CUSTOMIZATION.initialCharmPrice,
+  });
+
+  tx.createIfNotExists({
     _id: "siteSettings",
     _type: "siteSettings",
     announcementMessages: SEED_SETTINGS.announcementMessages,

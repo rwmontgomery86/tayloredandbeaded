@@ -26,7 +26,6 @@ export default defineType({
         list: [
           { title: "Necklaces", value: "necklaces" },
           { title: "Bracelets", value: "bracelets" },
-          { title: "Anklets", value: "anklets" },
           { title: "Bag Charms", value: "bag-charms" },
         ],
         layout: "radio",
@@ -103,8 +102,38 @@ export default defineType({
       description: "Shown in New Arrivals. Untick as pieces get older.",
     }),
     defineField({
+      name: "origin",
+      title: "Origin",
+      type: "string",
+      options: {
+        list: [
+          { title: "Handmade by Taylor", value: "handmade" },
+          { title: "Curated by Taylor", value: "curated" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "handmade",
+      description:
+        "Existing products without a selection are treated as handmade.",
+    }),
+    defineField({
+      name: "availability",
+      title: "Availability type",
+      type: "string",
+      options: {
+        list: [
+          { title: "Made to order", value: "year-round" },
+          { title: "One of a kind", value: "premade" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "premade",
+      description:
+        "Existing products without a selection are treated as one of a kind.",
+    }),
+    defineField({
       name: "status",
-      title: "Availability",
+      title: "Sale status",
       type: "string",
       options: {
         list: [
@@ -114,6 +143,7 @@ export default defineType({
         layout: "radio",
       },
       initialValue: "available",
+      description: "Ignored for made-to-order products.",
     }),
   ],
   preview: {

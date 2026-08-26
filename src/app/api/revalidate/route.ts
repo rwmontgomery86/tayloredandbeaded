@@ -14,6 +14,7 @@ const TYPE_TAGS: Record<string, string[]> = {
   faqItem: ["faq"],
   careGuide: ["careGuide"],
   pricing: ["pricing"],
+  customization: ["customization"],
   siteSettings: ["settings"],
 };
 
