@@ -13,13 +13,13 @@ export const CATEGORIES: Category[] = [
     slug: "necklaces",
     title: "Necklaces",
     basePrice: 25,
-    image: "/products/category-necklaces.png",
+    image: "/products/category-necklaces.jpg",
   },
   {
     slug: "bracelets",
     title: "Bracelets",
     basePrice: 15,
-    image: "/products/category-bracelets.png",
+    image: "/products/category-bracelets.jpg",
   },
   {
     slug: "bag-charms",
