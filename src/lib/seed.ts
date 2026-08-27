@@ -114,8 +114,8 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     // Bag charms are customized to order, so they are year-round by nature.
     availability: "year-round",
     price: 15,
-    image: "/products/bag-charm-confetti.png",
-    images: ["/products/bag-charm-confetti.png"],
+    image: "/products/bag-charm-taylored.jpg",
+    images: ["/products/bag-charm-taylored.jpg"],
     description:
       "Chunky, happy beads in hot pink, orange, and green with a gold clasp—clip it to your tote, backpack, or keys for instant personality.",
     materials: ["Acrylic beads", "Gold-tone clasp"],
