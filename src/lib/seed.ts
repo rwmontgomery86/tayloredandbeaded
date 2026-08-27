@@ -23,89 +23,6 @@ interface SeedProduct extends ProductCardData {
 
 export const SEED_PRODUCTS: SeedProduct[] = [
   {
-    id: "seed-golden-hour",
-    name: "Golden Hour Necklace",
-    slug: "golden-hour-necklace",
-    category: "necklaces",
-    origin: "handmade",
-    availability: "premade",
-    price: 25,
-    image: "/products/necklace-warm-tones.png",
-    images: ["/products/necklace-warm-tones.png"],
-    description:
-      "Warm rose quartz pinks, honey ambers, and toasted caramel tones strung with delicate gold spacers. Like the last golden minutes of a summer evening, made wearable.",
-    materials: ["Glass & stone beads", "Gold-tone spacers", "Durable stringing wire"],
-    colors: [
-      { hex: "#f2b8c6" },
-      { hex: "#e8a33d" },
-      { hex: "#c96f2f" },
-      { hex: "#8a5a2b" },
-    ],
-    newArrival: true,
-  },
-  {
-    id: "seed-tidepool",
-    name: "Tidepool Necklace",
-    slug: "tidepool-necklace",
-    category: "necklaces",
-    origin: "handmade",
-    availability: "premade",
-    price: 25,
-    image: "/products/necklace-ocean-blues.png",
-    images: ["/products/necklace-ocean-blues.png"],
-    description:
-      "Ocean blues, seaglass greens, and deep lapis paired with brushed gold accents. A little piece of the coast for everyday wear.",
-    materials: ["Glass & stone beads", "Gold-tone spacers", "Durable stringing wire"],
-    colors: [
-      { hex: "#2f7fb8" },
-      { hex: "#8fbf4d" },
-      { hex: "#bfe3d9" },
-      { hex: "#28306e" },
-    ],
-    newArrival: true,
-  },
-  {
-    id: "seed-sorbet-skies",
-    name: "Sorbet Skies Necklace",
-    slug: "sorbet-skies-necklace",
-    category: "necklaces",
-    origin: "handmade",
-    availability: "premade",
-    price: 25,
-    image: "/products/necklace-rainbow-pastel.png",
-    images: ["/products/necklace-rainbow-pastel.png"],
-    description:
-      "A full rainbow of frosted pastel rondelles separated by tiny gold discs. Sweet, colorful, and impossible not to smile at.",
-    materials: ["Frosted glass rondelles", "Gold-tone discs", "Durable stringing wire"],
-    colors: [
-      { hex: "#f4a7b9" },
-      { hex: "#f7c873" },
-      { hex: "#9cc2e5" },
-      { hex: "#a8d5a2" },
-    ],
-    newArrival: true,
-  },
-  {
-    id: "seed-cotton-candy",
-    name: "Cotton Candy Stack",
-    slug: "cotton-candy-stack",
-    category: "bracelets",
-    origin: "handmade",
-    availability: "premade",
-    price: 15,
-    image: "/products/bracelet-pastel-stack.png",
-    images: ["/products/bracelet-pastel-stack.png"],
-    description:
-      "Three coordinating pastel bracelets meant to be worn together (or shared with your best friend). Soft pinks, blues, and buttery yellows with gold details.",
-    materials: ["Glass beads", "Gold-tone spacers", "Sturdy elastic cord"],
-    colors: [
-      { hex: "#f4b8c9" },
-      { hex: "#a5cbe8" },
-      { hex: "#f7e39a" },
-      { hex: "#b6dcb6" },
-    ],
-  },
-  {
     id: "seed-confetti-charm",
     name: "Bag Charm",
     slug: "confetti-bag-charm",
@@ -368,10 +285,10 @@ export const SEED_PRODUCTS: SeedProduct[] = [
 ];
 
 export const SEED_FEATURED_SLUGS = [
-  "golden-hour-necklace",
-  "tidepool-necklace",
-  "sorbet-skies-necklace",
-  "cotton-candy-stack",
+  "parker-necklace",
+  "ansley-necklace",
+  "lynsey-necklace",
+  "faith-necklace",
   "confetti-bag-charm",
 ];
 
