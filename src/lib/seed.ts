@@ -254,7 +254,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-bold-multicolor-stone-necklace",
-    name: "Bold Multicolor Stone Necklace",
+    name: "Good Mood",
     slug: "bold-multicolor-stone-necklace",
     category: "necklaces",
     origin: "curated",
@@ -273,7 +273,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-peach-and-cream-stone-necklace",
-    name: "Peach and Cream Stone Necklace",
+    name: "Pretty in Peach",
     slug: "peach-and-cream-stone-necklace",
     category: "necklaces",
     origin: "curated",
@@ -292,7 +292,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-pastel-multicolor-stone-necklace",
-    name: "Pastel Multicolor Stone Necklace",
+    name: "Coastal Cutie",
     slug: "pastel-multicolor-stone-necklace",
     category: "necklaces",
     origin: "curated",
@@ -311,7 +311,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-brown-and-cream-stone-necklace",
-    name: "Brown and Cream Stone Necklace",
+    name: "Espresso",
     slug: "brown-and-cream-stone-necklace",
     category: "necklaces",
     origin: "curated",
@@ -328,7 +328,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-blue-and-green-stone-necklace",
-    name: "Blue and Green Stone Necklace",
+    name: "Lucky",
     slug: "blue-and-green-stone-necklace",
     category: "necklaces",
     origin: "curated",
