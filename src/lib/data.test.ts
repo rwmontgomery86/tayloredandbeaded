@@ -27,7 +27,7 @@ describe("product origin data behavior", () => {
 
     const [necklaces, curatedProduct, theEdit] = await Promise.all([
       getProducts("necklaces"),
-      getProduct("coastal-pearl-pendant"),
+      getProduct("sage-marble-stone-necklace"),
       getCollection("the-edit"),
     ]);
 
@@ -40,7 +40,7 @@ describe("product origin data behavior", () => {
       curatedProduct?.related.every((product) => product.origin === "curated"),
     ).toBe(true);
     expect(theEdit?.intro).toContain("curated rather than handmade by me");
-    expect(theEdit?.products).toHaveLength(3);
+    expect(theEdit?.products).toHaveLength(7);
     expect(
       theEdit?.products.every((product) => product.origin === "curated"),
     ).toBe(true);
