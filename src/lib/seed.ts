@@ -347,7 +347,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "seed-multicolor-cross-necklace",
-    name: "Multicolor Cross Necklace",
+    name: "Showstopper",
     slug: "multicolor-cross-necklace",
     category: "necklaces",
     origin: "curated",

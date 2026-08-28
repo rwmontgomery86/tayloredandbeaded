@@ -13,6 +13,7 @@ const RENAMES: Record<string, string> = {
   "pastel-multicolor-stone-necklace": "Coastal Cutie",
   "brown-and-cream-stone-necklace": "Espresso",
   "blue-and-green-stone-necklace": "Lucky",
+  "multicolor-cross-necklace": "Showstopper",
 };
 
 const client = getCliClient({ apiVersion: "2026-07-01" });
