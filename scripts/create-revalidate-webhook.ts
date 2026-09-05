@@ -6,11 +6,19 @@
  * environment (.env.local), so it stays in sync with the deployed app.
  *
  * Run with:  npx sanity exec scripts/create-revalidate-webhook.ts --with-user-token
+ *
+ * Talks to the global management API (api.sanity.io) directly with fetch:
+ * the project-scoped client host (<projectId>.api.sanity.io) does not serve
+ * /hooks, and the hooks API updates with PATCH, not PUT.
  */
 import { getCliClient } from "sanity/cli";
 
-const client = getCliClient({ apiVersion: "2026-07-01" });
-const { projectId, dataset } = client.config();
+const API_VERSION = "2026-07-01";
+const NAME = "next-revalidate";
+
+const { projectId, dataset, token } = getCliClient({
+  apiVersion: API_VERSION,
+}).config();
 
 const secret = process.env.SANITY_REVALIDATE_SECRET;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -19,20 +27,39 @@ if (!secret || !siteUrl || siteUrl.includes("localhost")) {
     "SANITY_REVALIDATE_SECRET and a non-localhost NEXT_PUBLIC_SITE_URL are required",
   );
 }
+if (!token) {
+  throw new Error("No user token — run with `sanity exec ... --with-user-token`");
+}
 
-const NAME = "next-revalidate";
+const hooksUrl = `https://api.sanity.io/v${API_VERSION}/hooks/projects/${projectId}`;
+
+interface Hook {
+  id: string;
+  name: string;
+  url: string;
+}
+
+async function api<T>(url: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(url, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      ...init.headers,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`${init.method ?? "GET"} ${url} → HTTP ${res.status}`);
+  }
+  return (await res.json()) as T;
+}
 
 async function run() {
-  const hooks = await client.request<{ id: string; name: string }[]>({
-    uri: `/hooks/projects/${projectId}`,
-    useGlobalApi: true,
-  });
+  const hooks = await api<Hook[]>(hooksUrl);
   const existing = hooks.find((h) => h.name === NAME);
 
   const body = {
     name: NAME,
-    dataset,
-    type: "document",
     url: `${siteUrl}/api/revalidate`,
     httpMethod: "POST",
     apiVersion: "v2021-03-25",
@@ -44,21 +71,23 @@ async function run() {
     secret,
   };
 
-  const result = await client.request({
-    uri: existing
-      ? `/hooks/projects/${projectId}/${existing.id}`
-      : `/hooks/projects/${projectId}`,
-    method: existing ? "PUT" : "POST",
-    useGlobalApi: true,
-    body,
-  });
+  const result = existing
+    ? await api<Hook>(`${hooksUrl}/${existing.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      })
+    : await api<Hook>(hooksUrl, {
+        method: "POST",
+        body: JSON.stringify({ ...body, dataset, type: "document" }),
+      });
+
   console.log(
-    `${existing ? "Updated" : "Created"} webhook "${NAME}" → ${body.url}`,
+    `${existing ? "Updated" : "Created"} webhook "${NAME}" → ${result.url}`,
   );
-  console.log(`id: ${(result as { id: string }).id}`);
+  console.log(`id: ${result.id}`);
 }
 
 run().catch((err) => {
-  console.error(err.message ?? err);
+  console.error(err);
   process.exit(1);
 });
