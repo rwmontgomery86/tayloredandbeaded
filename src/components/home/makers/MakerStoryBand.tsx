@@ -23,13 +23,13 @@ export default function MakerStoryBand({ teaser }: { teaser?: string }) {
         <div className="grid items-center gap-10 md:grid-cols-[1fr_1.15fr] md:gap-16">
           <Reveal>
             <div className="relative mx-auto max-w-sm md:max-w-none">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
+              <div className="relative aspect-square overflow-hidden rounded-[2rem]">
                 <Image
-                  src="/photos/taylor-holding-necklaces.jpg"
-                  alt="Taylor holding handfuls of beaded necklaces"
+                  src="/photos/taylor-seated-displays.jpg"
+                  alt="Taylor seated on the studio floor surrounded by displays of her beaded necklaces and bracelets"
                   fill
                   sizes="(min-width: 768px) 40vw, 85vw"
-                  className="object-cover object-[50%_12%]"
+                  className="object-cover"
                 />
               </div>
               <div className="absolute -bottom-5 right-2 flex h-24 w-24 items-center justify-center rounded-full border border-ink/15 bg-cream text-center md:h-28 md:w-28">
