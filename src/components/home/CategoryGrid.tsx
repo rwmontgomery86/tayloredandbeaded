@@ -6,7 +6,13 @@ import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { CATEGORIES, NEW_ARRIVALS_SLUG } from "@/lib/categories";
 import { ArrowRightIcon } from "@/components/ui/icons";
 
-const CARDS = [
+const CARDS: {
+  slug: string;
+  title: string;
+  image: string;
+  /** Tailwind object-position class when the default center crop clips the subject */
+  imagePosition?: string;
+}[] = [
   ...CATEGORIES.map((c) => ({
     slug: c.slug,
     title: c.title,
@@ -16,6 +22,7 @@ const CARDS = [
     slug: NEW_ARRIVALS_SLUG,
     title: "New Arrivals",
     image: "/products/category-new-arrivals.jpg",
+    imagePosition: "object-[50%_40%]",
   },
 ];
 
@@ -39,7 +46,7 @@ export default function CategoryGrid() {
                     alt={card.title}
                     fill
                     sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 50vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    className={`object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05] ${card.imagePosition ?? ""}`}
                   />
                 </div>
                 <div className="px-4 py-4 text-center">
