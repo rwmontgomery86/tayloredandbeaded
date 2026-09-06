@@ -75,6 +75,10 @@ export interface SiteSettingsData {
   email?: string;
   metaDescription?: string;
   aboutTeaser: string;
+  /** Square-cropped CDN URL, or null to use the built-in photo. */
+  makerPhoto: { url: string; alt?: string } | null;
+  /** Square-cropped CDN URLs keyed by shop category slug; missing = built-in photo. */
+  categoryImages: Partial<Record<CategorySlug | "new-arrivals", string>>;
 }
 
 export type PricingMap = Record<CategorySlug, number>;

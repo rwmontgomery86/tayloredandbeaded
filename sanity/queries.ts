@@ -85,5 +85,7 @@ export const SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   instagramUrl,
   email,
   metaDescription,
-  aboutTeaser
+  aboutTeaser,
+  makerPhoto,
+  categoryImages
 }`;

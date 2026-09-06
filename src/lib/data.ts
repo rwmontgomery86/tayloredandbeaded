@@ -1,6 +1,6 @@
 import { sanityConfigured } from "../../sanity/env";
 import { sanityFetch } from "../../sanity/lib/fetch";
-import { urlFor } from "../../sanity/lib/image";
+import { squareUrlFor, urlFor } from "../../sanity/lib/image";
 import {
   ALL_PRODUCTS_QUERY,
   PRODUCTS_BY_CATEGORY_QUERY,
@@ -88,14 +88,11 @@ export async function getCustomization(): Promise<CustomizationData> {
   );
 
   return {
-    beadColors: beadColors.length
-      ? beadColors
-      : SEED_CUSTOMIZATION.beadColors,
+    beadColors: beadColors.length ? beadColors : SEED_CUSTOMIZATION.beadColors,
     charmOptions: charmOptions.length
       ? charmOptions
       : SEED_CUSTOMIZATION.charmOptions,
-    bagScarfPrice:
-      c.bagScarfPrice ?? SEED_CUSTOMIZATION.bagScarfPrice,
+    bagScarfPrice: c.bagScarfPrice ?? SEED_CUSTOMIZATION.bagScarfPrice,
     initialCharmPrice:
       c.initialCharmPrice ?? SEED_CUSTOMIZATION.initialCharmPrice,
   };
@@ -166,13 +163,14 @@ export async function getProducts(
   ]);
   if (cards === null) {
     if (sanityConfigured) return []; // fetch error: honest empty beats phantoms
-    return SEED_PRODUCTS.filter((p) =>
-      p.origin === "handmade" &&
-      (!category || category === "all"
-        ? true
-        : category === NEW_ARRIVALS_SLUG
-          ? p.newArrival
-          : p.category === category),
+    return SEED_PRODUCTS.filter(
+      (p) =>
+        p.origin === "handmade" &&
+        (!category || category === "all"
+          ? true
+          : category === NEW_ARRIVALS_SLUG
+            ? p.newArrival
+            : p.category === category),
     );
   }
   return cards.map((c) => normalizeCard(c, pricing));
@@ -186,8 +184,7 @@ export async function getFeaturedProducts(): Promise<ProductCardData[]> {
   if (cards === null) {
     if (sanityConfigured) return [];
     return SEED_PRODUCTS.filter(
-      (p) =>
-        p.origin === "handmade" && SEED_FEATURED_SLUGS.includes(p.slug),
+      (p) => p.origin === "handmade" && SEED_FEATURED_SLUGS.includes(p.slug),
     );
   }
   return cards.map((c) => normalizeCard(c, pricing));
@@ -317,29 +314,54 @@ export async function getFaq(): Promise<FaqItemData[]> {
 }
 
 export async function getCareGuide(): Promise<CareGuideData> {
-  const guide = await sanityFetch<CareGuideData | null>(
-    CARE_GUIDE_QUERY,
-    {},
-    ["careGuide"],
-  );
+  const guide = await sanityFetch<CareGuideData | null>(CARE_GUIDE_QUERY, {}, [
+    "careGuide",
+  ]);
   if (!guide || !guide.sections?.length) return SEED_CARE_GUIDE;
   return guide;
 }
 
+type SanityImage = { asset?: { _ref?: string } };
+type SettingsDoc = Omit<
+  Partial<SiteSettingsData>,
+  "makerPhoto" | "categoryImages"
+> & {
+  makerPhoto?: SanityImage & { alt?: string };
+  categoryImages?: {
+    newArrivals?: SanityImage;
+    necklaces?: SanityImage;
+    bracelets?: SanityImage;
+    bagCharms?: SanityImage;
+  };
+};
+
+/** Square CDN URL, or undefined when the editor hasn't uploaded anything. */
+function tileUrl(img?: SanityImage) {
+  return img?.asset?._ref
+    ? (squareUrlFor(img as never) ?? undefined)
+    : undefined;
+}
+
 export async function getSettings(): Promise<SiteSettingsData> {
-  const s = await sanityFetch<Partial<SiteSettingsData> | null>(
-    SETTINGS_QUERY,
-    {},
-    ["settings"],
-  );
+  const s = await sanityFetch<SettingsDoc | null>(SETTINGS_QUERY, {}, [
+    "settings",
+  ]);
+  const maker = tileUrl(s?.makerPhoto);
+  const tiles = s?.categoryImages;
   return {
-    announcementMessages:
-      s?.announcementMessages?.length
-        ? s.announcementMessages
-        : SEED_SETTINGS.announcementMessages,
+    announcementMessages: s?.announcementMessages?.length
+      ? s.announcementMessages
+      : SEED_SETTINGS.announcementMessages,
     instagramUrl: s?.instagramUrl ?? SEED_SETTINGS.instagramUrl,
     email: s?.email,
     metaDescription: s?.metaDescription,
     aboutTeaser: s?.aboutTeaser ?? SEED_SETTINGS.aboutTeaser,
+    makerPhoto: maker ? { url: maker, alt: s?.makerPhoto?.alt } : null,
+    categoryImages: {
+      "new-arrivals": tileUrl(tiles?.newArrivals),
+      necklaces: tileUrl(tiles?.necklaces),
+      bracelets: tileUrl(tiles?.bracelets),
+      "bag-charms": tileUrl(tiles?.bagCharms),
+    },
   };
 }
