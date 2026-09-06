@@ -6,16 +6,29 @@ import Reveal from "@/components/motion/Reveal";
 import Button from "@/components/ui/Button";
 import FloralDecor from "@/components/ui/FloralDecor";
 import { HeartIcon } from "@/components/ui/icons";
+import type { SiteSettingsData } from "@/lib/types";
+
+const DEFAULT_PHOTO = {
+  url: "/photos/taylor-seated-displays.jpg",
+  alt: "Taylor seated on the studio floor surrounded by displays of her beaded necklaces and bracelets",
+};
 
 const DEFAULT_TEASER =
   "What started as a way to relieve stress after unexpectedly losing my job became my creative outlet, my therapy, and my passion. Every piece is handmade with love, creativity, and a little piece of my story.";
 
 /**
  * Maker variant A — "Story Band": the chosen homepage Meet-the-Maker
- * section. The paragraph stays editable via Sanity's aboutTeaser;
- * the pull-quote and signature are fixed brand prose.
+ * section. The paragraph and photo stay editable via Sanity's aboutTeaser
+ * and makerPhoto; the pull-quote and signature are fixed brand prose.
  */
-export default function MakerStoryBand({ teaser }: { teaser?: string }) {
+export default function MakerStoryBand({
+  teaser,
+  photo,
+}: {
+  teaser?: string;
+  photo?: SiteSettingsData["makerPhoto"];
+}) {
+  const img = photo ?? DEFAULT_PHOTO;
   return (
     <Section bg="cream-dark" className="overflow-hidden">
       <FloralDecor className="right-[-3rem] top-1/2 hidden w-56 -translate-y-1/2 text-mauve/25 lg:block" flip />
@@ -25,8 +38,8 @@ export default function MakerStoryBand({ teaser }: { teaser?: string }) {
             <div className="relative mx-auto max-w-sm md:max-w-none">
               <div className="relative aspect-square overflow-hidden rounded-[2rem]">
                 <Image
-                  src="/photos/taylor-seated-displays.jpg"
-                  alt="Taylor seated on the studio floor surrounded by displays of her beaded necklaces and bracelets"
+                  src={img.url}
+                  alt={img.alt ?? "Taylor, the maker behind Taylored & Beaded"}
                   fill
                   sizes="(min-width: 768px) 40vw, 85vw"
                   className="object-cover"

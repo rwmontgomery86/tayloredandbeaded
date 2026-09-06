@@ -532,4 +532,6 @@ export const SEED_SETTINGS: SiteSettingsData = {
   instagramUrl: "https://www.instagram.com/taylored_beaded/",
   aboutTeaser:
     "What started as a way to relieve stress after unexpectedly losing my job became my creative outlet, my therapy, and my passion. Every piece is handmade with love, creativity, and a little piece of my story.",
+  makerPhoto: null,
+  categoryImages: {},
 };

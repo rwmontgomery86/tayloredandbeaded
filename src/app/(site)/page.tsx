@@ -17,8 +17,11 @@ export default async function HomePage() {
     <>
       <HeroFullBleed />
       <ValueProps />
-      <CategoryGrid />
-      <MakerStoryBand teaser={settings.aboutTeaser} />
+      <CategoryGrid images={settings.categoryImages} />
+      <MakerStoryBand
+        teaser={settings.aboutTeaser}
+        photo={settings.makerPhoto}
+      />
       <FeaturedPieces products={featured} />
       <PermanentJewelryBand />
       <NewsletterBand />
