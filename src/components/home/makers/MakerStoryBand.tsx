@@ -9,8 +9,8 @@ import { HeartIcon } from "@/components/ui/icons";
 import type { SiteSettingsData } from "@/lib/types";
 
 const DEFAULT_PHOTO = {
-  url: "/photos/taylor-seated-displays.jpg",
-  alt: "Taylor seated on the studio floor surrounded by displays of her beaded necklaces and bracelets",
+  url: "/photos/taylor-stool-beads.jpg",
+  alt: "Taylor smiling on a boucle stool in a white shirt and jeans, holding strands of colorful beaded necklaces",
 };
 
 const DEFAULT_TEASER =
