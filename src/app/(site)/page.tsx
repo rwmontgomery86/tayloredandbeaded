@@ -1,4 +1,4 @@
-import HeroFullBleed from "@/components/home/heroes/HeroFullBleed";
+import HeroCloseup from "@/components/home/heroes/HeroCloseup";
 import ValueProps from "@/components/home/ValueProps";
 import CategoryGrid from "@/components/home/CategoryGrid";
 import MakerStoryBand from "@/components/home/makers/MakerStoryBand";
@@ -15,7 +15,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroFullBleed />
+      <HeroCloseup />
       <ValueProps />
       <CategoryGrid images={settings.categoryImages} />
       <MakerStoryBand
