@@ -1,6 +1,6 @@
 # Square hosted checkout: phased plan
 
-_Drafted Oct 26, 2026. Status: plan only, nothing built._
+_Drafted Oct 26, 2026. Status: phase 1 built and open as PR #20; sandbox test pending._
 
 ## Goal
 
@@ -108,7 +108,7 @@ customization note. No website emails yet.
   sandbox dashboard with correct notes, totals and shipping address.
 
 **Build status (Oct 26)**: code done on branch `claude/latest-from-main-230f11`
-(uncommitted), behind `CHECKOUT_ENABLED`. Buy now is limited to made-to-order
+(PR #20), behind `CHECKOUT_ENABLED`. Buy now is limited to made-to-order
 pieces; one-of-a-kind ones keep the email request until phase 2's auto-sold.
 Not yet run against the real sandbox.
 
