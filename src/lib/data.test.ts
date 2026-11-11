@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ALL_PRODUCTS_QUERY, PRICING_QUERY } from "../../sanity/queries";
+import {
+  ALL_PRODUCTS_QUERY,
+  CHECKOUT_SETTINGS_QUERY,
+  PRICING_QUERY,
+} from "../../sanity/queries";
 
 const { sanityFetchMock } = vi.hoisted(() => ({
   sanityFetchMock: vi.fn<
@@ -15,7 +19,34 @@ vi.mock("../../sanity/lib/fetch", () => ({
   sanityFetch: sanityFetchMock,
 }));
 
-import { getCollection, getProduct, getProducts } from "./data";
+import { getCheckoutSettings, getCollection, getProduct, getProducts } from "./data";
+
+describe("checkout settings", () => {
+  beforeEach(() => {
+    sanityFetchMock.mockReset();
+  });
+
+  it.each([null, {}])("uses defaults for missing settings: %s", async (settings) => {
+    sanityFetchMock.mockResolvedValue(settings);
+    await expect(getCheckoutSettings()).resolves.toEqual({
+      shippingFlatRate: 5,
+      freeShippingThreshold: 100,
+      salesTaxPercent: 0,
+    });
+    expect(sanityFetchMock).toHaveBeenCalledWith(CHECKOUT_SETTINGS_QUERY, {}, ["pricing"]);
+  });
+
+  it("preserves configured zeroes and fills missing fields independently", async () => {
+    sanityFetchMock.mockResolvedValue({ shippingFlatRate: 0, salesTaxPercent: 8.25 });
+    await expect(getCheckoutSettings()).resolves.toEqual({
+      shippingFlatRate: 0, freeShippingThreshold: 100, salesTaxPercent: 8.25,
+    });
+    sanityFetchMock.mockResolvedValue({ shippingFlatRate: 7, freeShippingThreshold: 0 });
+    await expect(getCheckoutSettings()).resolves.toEqual({
+      shippingFlatRate: 7, freeShippingThreshold: 0, salesTaxPercent: 0,
+    });
+  });
+});
 
 describe("product origin data behavior", () => {
   beforeEach(() => {

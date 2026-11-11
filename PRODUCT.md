@@ -2,7 +2,7 @@
 
 ## What this is
 
-A showcase website for Taylored & Beaded, a boutique handmade beaded jewelry studio. One maker: Taylor, who started the brand after unexpectedly losing her job and turning beading from stress relief into a passion business. Every piece is one-of-a-kind, hand-strung in small batches. The site displays the work, tells her story, and routes purchase interest to an inquiry form. There is no cart or checkout; payment happens personally after an inquiry.
+A showcase website for Taylored & Beaded, a boutique handmade beaded jewelry studio. One maker: Taylor, who started the brand after unexpectedly losing her job and turning beading from stress relief into a passion business. Every piece is one-of-a-kind, hand-strung in small batches. The site displays the work, tells her story, and lets shoppers buy configurable pieces through Square's hosted checkout (one piece per checkout for now). Curated pieces and special requests still go through an inquiry.
 
 ## Register
 

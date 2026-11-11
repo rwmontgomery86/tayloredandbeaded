@@ -1,10 +1,16 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Button from "@/components/ui/Button";
+import { shippingFor } from "@/lib/checkout";
 import { availableAddOns, calculateQuote } from "@/lib/quote";
 import { formatPrice } from "@/lib/utils";
-import type { CustomizationData, PricingMap, ProductDetailData } from "@/lib/types";
+import type {
+  CheckoutSettings,
+  CustomizationData,
+  PricingMap,
+  ProductDetailData,
+} from "@/lib/types";
 
 type Status = "idle" | "pending" | "success" | "error";
 
@@ -18,6 +24,7 @@ export default function ProductConfigurator({
   product,
   customization,
   pricing,
+  checkout,
 }: {
   product: Pick<
     ProductDetailData,
@@ -25,6 +32,8 @@ export default function ProductConfigurator({
   >;
   customization: CustomizationData;
   pricing: PricingMap;
+  /** Present when online checkout is on: "Buy now" via Square replaces the request form. */
+  checkout?: CheckoutSettings | null;
 }) {
   const [initialCharm, setInitialCharm] = useState(false);
   const [initial, setInitial] = useState("");
@@ -62,6 +71,17 @@ export default function ProductConfigurator({
       ),
     [product, isNecklace, initialCharm, matchingBracelet, offersBracelet, isBagCharm, bagScarf, customization, pricing],
   );
+  const shipping = checkout ? shippingFor(quote.total, checkout) : null;
+
+  // Coming back from Square with the browser's Back button restores this page
+  // from the back/forward cache, still "pending" — re-enable the button.
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setStatus("idle");
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   function toggleCharm(charm: string) {
     setCharms((prev) =>
@@ -79,6 +99,37 @@ export default function ProductConfigurator({
     }
     setStatus("pending");
     setError(undefined);
+    const config = {
+      initialCharm: isNecklace && initialCharm,
+      initial: isNecklace && initialCharm ? initial : undefined,
+      matchingBracelet: offersBracelet && matchingBracelet,
+      beadColor: isBagCharm ? beadColor : undefined,
+      personalization:
+        isBagCharm && personalization ? personalization : undefined,
+      charms: isBagCharm && charms.length ? charms : undefined,
+      bagScarf: isBagCharm && bagScarf,
+    };
+
+    if (checkout) {
+      try {
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: product.slug, config }),
+        });
+        const json = await res.json();
+        if (!json.ok || !json.url) {
+          throw new Error(json.error ?? "Something went wrong");
+        }
+        // Stay "pending" while the browser leaves for Square's checkout page.
+        window.location.assign(json.url);
+      } catch (err) {
+        setStatus("error");
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      }
+      return;
+    }
+
     // If the first captured interaction was the submit click itself (fully
     // autofilled form), elapsed would be ~0 and the server would mistake a
     // real shopper for a bot — omit the timing signal instead of lying.
@@ -90,16 +141,7 @@ export default function ProductConfigurator({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slug: product.slug,
-          config: {
-            initialCharm: isNecklace && initialCharm,
-            initial: isNecklace && initialCharm ? initial : undefined,
-            matchingBracelet: offersBracelet && matchingBracelet,
-            beadColor: isBagCharm ? beadColor : undefined,
-            personalization:
-              isBagCharm && personalization ? personalization : undefined,
-            charms: isBagCharm && charms.length ? charms : undefined,
-            bagScarf: isBagCharm && bagScarf,
-          },
+          config,
           name: data.name,
           email: data.email,
           notes: data.notes,
@@ -294,65 +336,80 @@ export default function ProductConfigurator({
               <span>{formatPrice(line.amount)}</span>
             </li>
           ))}
+          {shipping !== null && (
+            <li className="flex justify-between gap-4">
+              <span className="text-ink-soft">Shipping</span>
+              <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+            </li>
+          )}
         </ul>
         <div className="mt-2 flex justify-between gap-4 border-t border-ink/10 pt-2 font-medium">
           <span>Total</span>
-          <span>{formatPrice(quote.total)}</span>
+          <span>{formatPrice(quote.total + (shipping ?? 0))}</span>
         </div>
+        {checkout && checkout.salesTaxPercent > 0 && (
+          <p className="mt-1.5 text-xs text-ink-soft">
+            Sales tax is added at checkout.
+          </p>
+        )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="request-name" className="eyebrow mb-2 block text-[0.65rem]">
-            Name
-          </label>
+      {!checkout && (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="request-name" className="eyebrow mb-2 block text-[0.65rem]">
+                Name
+              </label>
+              <input
+                id="request-name"
+                name="name"
+                required
+                maxLength={100}
+                className={inputClasses}
+                placeholder="Your name"
+              />
+            </div>
+            <div>
+              <label htmlFor="request-email" className="eyebrow mb-2 block text-[0.65rem]">
+                Email
+              </label>
+              <input
+                id="request-email"
+                name="email"
+                type="email"
+                required
+                className={inputClasses}
+                placeholder="you@example.com"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="request-notes" className="eyebrow mb-2 block text-[0.65rem]">
+              Notes <span className="normal-case text-ink-soft/70">(optional)</span>
+            </label>
+            <textarea
+              id="request-notes"
+              name="notes"
+              maxLength={1000}
+              rows={3}
+              className={inputClasses}
+              placeholder="Anything else Taylor should know — another piece you'd like, a gift note…"
+            />
+          </div>
+
+          {/* honeypot */}
           <input
-            id="request-name"
-            name="name"
-            required
-            maxLength={100}
-            className={inputClasses}
-            placeholder="Your name"
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="absolute -left-[9999px]"
           />
-        </div>
-        <div>
-          <label htmlFor="request-email" className="eyebrow mb-2 block text-[0.65rem]">
-            Email
-          </label>
-          <input
-            id="request-email"
-            name="email"
-            type="email"
-            required
-            className={inputClasses}
-            placeholder="you@example.com"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="request-notes" className="eyebrow mb-2 block text-[0.65rem]">
-          Notes <span className="normal-case text-ink-soft/70">(optional)</span>
-        </label>
-        <textarea
-          id="request-notes"
-          name="notes"
-          maxLength={1000}
-          rows={3}
-          className={inputClasses}
-          placeholder="Anything else Taylor should know — another piece you'd like, a gift note…"
-        />
-      </div>
-
-      {/* honeypot */}
-      <input
-        type="text"
-        name="website"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-        className="absolute -left-[9999px]"
-      />
+        </>
+      )}
 
       {status === "error" && (
         <p className="text-sm text-mauve-deep" role="alert">
@@ -360,15 +417,26 @@ export default function ProductConfigurator({
         </p>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" disabled={status === "pending"}>
-          {status === "pending" ? "Sending…" : "Request this piece"}
-        </Button>
-        <p className="text-xs leading-relaxed text-ink-soft">
-          No payment is taken online — Taylor confirms your order and payment
-          details by email.
-        </p>
-      </div>
+      {checkout ? (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button type="submit" disabled={status === "pending"}>
+            {status === "pending" ? "Opening checkout…" : "Buy now"}
+          </Button>
+          <p className="text-xs leading-relaxed text-ink-soft">
+            Secure checkout with Square. Made to order, ships in about a week.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button type="submit" disabled={status === "pending"}>
+            {status === "pending" ? "Sending…" : "Request this piece"}
+          </Button>
+          <p className="text-xs leading-relaxed text-ink-soft">
+            No payment is taken online — Taylor confirms your order and payment
+            details by email.
+          </p>
+        </div>
+      )}
     </form>
   );
 }

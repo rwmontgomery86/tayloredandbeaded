@@ -12,6 +12,7 @@ import {
   FAQ_QUERY,
   CARE_GUIDE_QUERY,
   PRICING_QUERY,
+  CHECKOUT_SETTINGS_QUERY,
   CUSTOMIZATION_QUERY,
   SETTINGS_QUERY,
 } from "../../sanity/queries";
@@ -28,6 +29,7 @@ import {
 } from "./seed";
 import type {
   CareGuideData,
+  CheckoutSettings,
   CollectionDetailData,
   CustomizationColor,
   CustomizationData,
@@ -59,6 +61,19 @@ export async function getPricing(): Promise<PricingMap> {
     necklaces: p.necklaces ?? FALLBACK_PRICING.necklaces,
     bracelets: p.bracelets ?? FALLBACK_PRICING.bracelets,
     "bag-charms": p.bagCharms ?? FALLBACK_PRICING["bag-charms"],
+  };
+}
+
+export async function getCheckoutSettings(): Promise<CheckoutSettings> {
+  const settings = await sanityFetch<Partial<CheckoutSettings>>(
+    CHECKOUT_SETTINGS_QUERY,
+    {},
+    ["pricing"],
+  );
+  return {
+    shippingFlatRate: settings?.shippingFlatRate ?? 5,
+    freeShippingThreshold: settings?.freeShippingThreshold ?? 100,
+    salesTaxPercent: settings?.salesTaxPercent ?? 0,
   };
 }
 
