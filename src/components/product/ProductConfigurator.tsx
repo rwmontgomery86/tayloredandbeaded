@@ -423,7 +423,7 @@ export default function ProductConfigurator({
             {status === "pending" ? "Opening checkout…" : "Buy now"}
           </Button>
           <p className="text-xs leading-relaxed text-ink-soft">
-            Secure checkout with Square. Made to order, ships in about a week.
+            Secure checkout with Square. Made to order, ships in 1–2 weeks.
           </p>
         </div>
       ) : (

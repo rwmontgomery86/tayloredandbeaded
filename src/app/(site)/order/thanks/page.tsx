@@ -19,7 +19,7 @@ export default function OrderThanksPage() {
       </h1>
       <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-soft">
         Your order is in and your receipt is on its way to your inbox. I make
-        each piece by hand, so made-to-order styles usually take about a week
+        each piece by hand, so made-to-order styles usually take 1–2 weeks
         before they ship. I&rsquo;ll be in touch if I have any questions about
         your choices.
       </p>

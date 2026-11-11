@@ -432,7 +432,7 @@ export const SEED_FAQ: FaqItemData[] = [
     id: "seed-faq-shipping",
     question: "How long does shipping take?",
     answer:
-      "One-of-a-kind pieces that are ready to go ship within 2–3 business days. Made-to-order styles and personalized charms usually take about a week to make before they ship. Orders over $75 ship free!",
+      "One-of-a-kind pieces that are ready to go ship within 2–3 business days. Made-to-order styles and personalized charms usually take 1–2 weeks to make before they ship. Orders over $75 ship free!",
     category: "shipping",
   },
   {
