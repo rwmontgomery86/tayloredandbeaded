@@ -54,9 +54,13 @@ interface SanityPricing {
   bagCharms?: number;
 }
 
-export async function getPricing(): Promise<PricingMap> {
+// The getLive* loaders return null when Sanity is configured but didn't answer.
+// Pages fall back to defaults for display; checkout must refuse instead, so a
+// shopper is never charged a fallback amount.
+
+export async function getLivePricing(): Promise<PricingMap | null> {
   const p = await sanityFetch<SanityPricing>(PRICING_QUERY, {}, ["pricing"]);
-  if (!p) return FALLBACK_PRICING;
+  if (!p) return sanityConfigured ? null : FALLBACK_PRICING;
   return {
     necklaces: p.necklaces ?? FALLBACK_PRICING.necklaces,
     bracelets: p.bracelets ?? FALLBACK_PRICING.bracelets,
@@ -64,12 +68,18 @@ export async function getPricing(): Promise<PricingMap> {
   };
 }
 
-export async function getCheckoutSettings(): Promise<CheckoutSettings> {
+export async function getPricing(): Promise<PricingMap> {
+  return (await getLivePricing()) ?? FALLBACK_PRICING;
+}
+
+/** null = live settings unavailable; callers must not offer checkout. */
+export async function getCheckoutSettings(): Promise<CheckoutSettings | null> {
   const settings = await sanityFetch<Partial<CheckoutSettings>>(
     CHECKOUT_SETTINGS_QUERY,
     {},
     ["pricing"],
   );
+  if (!settings && sanityConfigured) return null;
   return {
     shippingFlatRate: settings?.shippingFlatRate ?? 5,
     freeShippingThreshold: settings?.freeShippingThreshold ?? 100,
@@ -87,12 +97,16 @@ interface SanityCustomization {
 }
 
 export async function getCustomization(): Promise<CustomizationData> {
+  return (await getLiveCustomization()) ?? SEED_CUSTOMIZATION;
+}
+
+export async function getLiveCustomization(): Promise<CustomizationData | null> {
   const c = await sanityFetch<SanityCustomization | null>(
     CUSTOMIZATION_QUERY,
     {},
     ["customization"],
   );
-  if (!c) return SEED_CUSTOMIZATION;
+  if (!c) return sanityConfigured ? null : SEED_CUSTOMIZATION;
 
   const beadColors = (c.beadColors ?? []).filter(
     (color): color is CustomizationColor =>

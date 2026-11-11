@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { getCustomization, getPricing, getProduct } from "./data";
+import {
+  getCustomization,
+  getLiveCustomization,
+  getLivePricing,
+  getPricing,
+  getProduct,
+} from "./data";
 import {
   availableAddOns,
   calculateQuote,
@@ -28,6 +34,8 @@ export const configSchema = z
 
 export type OrderConfiguration = z.infer<typeof configSchema>;
 
+export const CHECKOUT_UNAVAILABLE = "Online checkout isn't available right now";
+
 export type ResolvedOrder =
   | {
       ok: true;
@@ -52,9 +60,14 @@ function allowedConfiguration(
   };
 }
 
+/**
+ * `live` is for checkout: prices must come from Sanity right now, so a failed
+ * lookup is an error rather than a fallback amount charged to a card.
+ */
 export async function resolveOrder(
   slug: string,
   config: OrderConfiguration,
+  { live = false }: { live?: boolean } = {},
 ): Promise<ResolvedOrder> {
   if (config.initialCharm && !config.initial) {
     return {
@@ -94,9 +107,12 @@ export async function resolveOrder(
   }
 
   const [customization, pricing] = await Promise.all([
-    getCustomization(),
-    getPricing(),
+    live ? getLiveCustomization() : getCustomization(),
+    live ? getLivePricing() : getPricing(),
   ]);
+  if (!customization || !pricing) {
+    return { ok: false, error: CHECKOUT_UNAVAILABLE, status: 503 };
+  }
 
   // Free bag-charm choices, validated against Taylor's Studio-managed options.
   // Unknown values are rejected, not dropped — a silently incomplete order

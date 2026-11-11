@@ -17,15 +17,20 @@ const parker: ProductDetailData = {
   related: [],
 };
 
-const mocks = vi.hoisted(() => ({ getProduct: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  getProduct: vi.fn(),
+  getLivePricing: vi.fn(),
+  getLiveCustomization: vi.fn(),
+  getCheckoutSettings: vi.fn(),
+}));
 
+// Checkout must only use the live loaders; the display fallbacks stay unmocked
+// so a regression to them fails loudly.
 vi.mock("@/lib/data", () => ({
   getProduct: mocks.getProduct,
-  getCustomization: async () => SEED_CUSTOMIZATION,
-  getPricing: async () => ({ necklaces: 25, bracelets: 15, "bag-charms": 15 }),
-  getCheckoutSettings: async () => ({
-    shippingFlatRate: 5, freeShippingThreshold: 100, salesTaxPercent: 0,
-  }),
+  getLiveCustomization: mocks.getLiveCustomization,
+  getLivePricing: mocks.getLivePricing,
+  getCheckoutSettings: mocks.getCheckoutSettings,
 }));
 
 import { POST } from "./route";
@@ -52,6 +57,13 @@ function sentBody(): PaymentLinkRequest {
 describe("POST /api/checkout", () => {
   beforeEach(() => {
     mocks.getProduct.mockReset().mockResolvedValue(parker);
+    mocks.getLiveCustomization.mockReset().mockResolvedValue(SEED_CUSTOMIZATION);
+    mocks.getLivePricing
+      .mockReset()
+      .mockResolvedValue({ necklaces: 25, bracelets: 15, "bag-charms": 15 });
+    mocks.getCheckoutSettings.mockReset().mockResolvedValue({
+      shippingFlatRate: 5, freeShippingThreshold: 100, salesTaxPercent: 0,
+    });
     fetchMock.mockReset().mockImplementation(async () => Response.json({
       payment_link: { url: checkoutUrl, order_id: "order-1" },
     }));
@@ -114,6 +126,17 @@ describe("POST /api/checkout", () => {
     expect((await POST(request(valid))).status).toBe(409);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it.each(["getLivePricing", "getLiveCustomization", "getCheckoutSettings"] as const)(
+    "refuses to charge fallback amounts when %s is unavailable",
+    async (loader) => {
+      mocks[loader].mockResolvedValue(null);
+      const res = await POST(request(valid));
+      expect(res.status).toBe(503);
+      expect(await res.json()).toEqual({ ok: false, error: "Online checkout isn't available right now" });
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
 
   it("creates a sandbox link with server prices, shipping, notes, and the pinned version", async () => {
     const res = await POST(request(valid));

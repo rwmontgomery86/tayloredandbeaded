@@ -3,7 +3,11 @@ import { z } from "zod";
 import { buildPaymentLinkRequest } from "@/lib/checkout";
 import { getCheckoutSettings } from "@/lib/data";
 import { jsonError, parseBody } from "@/lib/email";
-import { configSchema, resolveOrder } from "@/lib/order-config";
+import {
+  CHECKOUT_UNAVAILABLE,
+  configSchema,
+  resolveOrder,
+} from "@/lib/order-config";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { checkoutEnabled, createPaymentLink, getSquareConfig } from "@/lib/square";
 
@@ -24,14 +28,14 @@ export async function POST(req: Request) {
 
   const square = getSquareConfig();
   if (!checkoutEnabled() || !square) {
-    return jsonError("Online checkout isn't available right now", 503);
+    return jsonError(CHECKOUT_UNAVAILABLE, 503);
   }
   if (rateLimited(req)) {
     return jsonError("Too many requests — please try again later", 429);
   }
 
   const { slug, config } = parsed.data;
-  const resolved = await resolveOrder(slug, config);
+  const resolved = await resolveOrder(slug, config, { live: true });
   if (!resolved.ok) return jsonError(resolved.error, resolved.status);
   const { product, quote, detailLines, configLines } = resolved;
   // Nothing marks a one-of-a-kind piece sold after payment yet, so only
@@ -40,6 +44,7 @@ export async function POST(req: Request) {
     return jsonError("Please request this one-of-a-kind piece by email", 409);
   }
   const settings = await getCheckoutSettings();
+  if (!settings) return jsonError(CHECKOUT_UNAVAILABLE, 503);
   const details = [
     ...detailLines,
     ...configLines.filter((line) => line.startsWith("- Initial charm (“")),
