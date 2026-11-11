@@ -3,9 +3,11 @@
 Showcase website for Taylored & Beaded — one-of-a-kind handmade beaded jewelry
 by Taylor. Next.js (App Router) + Tailwind v4 + Framer Motion + Sanity + Resend.
 
-There is **no cart or checkout**: visitors browse and send an inquiry; Taylor
-handles payment personally in her replies (bundle deals and Cash App/Zelle are
-deliberately not published on the site).
+Configurable pieces can be bought online through **Square hosted checkout**
+("Buy now") when `CHECKOUT_ENABLED=true`; with it off, the same form sends
+Taylor an order request by email instead. Curated Edit pieces stay
+inquiry-only. Bundle deals and Cash App/Zelle are deliberately not published
+on the site.
 
 ## Local development
 
@@ -50,7 +52,21 @@ Once Sanity has products, the seed content disappears automatically.
 In development with no Resend keys, form submissions are logged to the server
 console and reported as successful.
 
-### 3. Deploy to Vercel
+### 3. Square (online checkout)
+
+1. In Taylor's Square account, create an app at developer.squareup.com.
+2. Set `SQUARE_ACCESS_TOKEN` and `SQUARE_LOCATION_ID` (sandbox values on
+   Preview, production values on Production) and `SQUARE_ENVIRONMENT`
+   (`sandbox` or `production`).
+3. Set `CHECKOUT_ENABLED=true` to swap "Request this piece" for "Buy now".
+   Product pages are statically generated, so flipping it needs a redeploy.
+4. Shipping charge, free-shipping threshold and sales tax live in the
+   Pricing singleton in Studio.
+
+Shoppers pay on Square's page and return to `/order/thanks`; orders (with the
+piece's options in the line-item note) show up in Taylor's Square Dashboard.
+
+### 4. Deploy to Vercel
 
 1. Push to GitHub, import the repo in Vercel.
 2. Add every variable from `.env.example` to Vercel (Production + Preview),

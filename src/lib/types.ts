@@ -82,3 +82,12 @@ export interface SiteSettingsData {
 }
 
 export type PricingMap = Record<CategorySlug, number>;
+
+export interface CheckoutSettings {
+  /** Flat shipping charge in USD for orders under the threshold. */
+  shippingFlatRate: number;
+  /** Subtotal (USD) at or above which shipping is free. */
+  freeShippingThreshold: number;
+  /** Order-level sales tax percent, e.g. 8.25; 0 = no tax line. */
+  salesTaxPercent: number;
+}

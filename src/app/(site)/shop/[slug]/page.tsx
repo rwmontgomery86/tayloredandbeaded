@@ -10,8 +10,15 @@ import AvailabilityBadge from "@/components/product/AvailabilityBadge";
 import CuratedBadge from "@/components/product/CuratedBadge";
 import { HeartIcon } from "@/components/ui/icons";
 import ProductConfigurator from "@/components/product/ProductConfigurator";
-import { getCustomization, getPricing, getProduct, getProductSlugs } from "@/lib/data";
+import {
+  getCheckoutSettings,
+  getCustomization,
+  getPricing,
+  getProduct,
+  getProductSlugs,
+} from "@/lib/data";
 import { isConfigurable } from "@/lib/quote";
+import { checkoutEnabled } from "@/lib/square";
 import { categoryTitle } from "@/lib/categories";
 import { formatPrice } from "@/lib/utils";
 
@@ -50,9 +57,16 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const configurable = isConfigurable(product);
-  const [customization, pricing] = configurable
-    ? await Promise.all([getCustomization(), getPricing()])
-    : [null, null];
+  // One-of-a-kind pieces keep the email request until sales can mark them sold
+  // automatically; otherwise two shoppers could pay for the same piece.
+  const buyable = checkoutEnabled() && product.availability === "year-round";
+  const [customization, pricing, checkout] = configurable
+    ? await Promise.all([
+        getCustomization(),
+        getPricing(),
+        buyable ? getCheckoutSettings() : null,
+      ])
+    : [null, null, null];
 
   return (
     <Section className="pt-10 md:pt-14">
@@ -149,6 +163,7 @@ export default async function ProductPage({
                   product={product}
                   customization={customization}
                   pricing={pricing}
+                  checkout={checkout}
                 />
               </div>
             ) : (
